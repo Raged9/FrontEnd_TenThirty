@@ -1,5 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap');
 
+@import "tailwindcss"; /* Pindahkan ini ke paling atas */
+
+
+
 :root {
   --color-primary: #4a5e4a;
   --color-primary-dark: #2d3d2d;
@@ -11,12 +15,21 @@
   --color-text-muted: #6b7a6b;
   --color-white: #fafaf7;
   --color-accent: #8fa08f;
+  
   --font-display: 'Playfair Display', Georgia, serif;
   --font-body: 'DM Sans', sans-serif;
+  
   --radius-sm: 6px;
   --radius-md: 12px;
   --radius-lg: 20px;
   --transition: 0.25s ease;
+}
+
+/* Jika Anda menggunakan Tailwind v4, Anda bisa menyuntikkan variabel ini ke Tailwind: */
+@theme inline {
+  --color-primary: var(--color-primary);
+  --color-bg: var(--color-bg);
+  /* tambahkan yang lain jika perlu */
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -32,9 +45,6 @@ body {
 }
 
 h1, h2, h3 { font-family: var(--font-display); }
-
 img { max-width: 100%; height: auto; display: block; }
-
 a { text-decoration: none; color: inherit; }
-
 button { cursor: pointer; border: none; background: none; font-family: var(--font-body); }

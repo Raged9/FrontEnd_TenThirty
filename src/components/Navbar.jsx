@@ -4,126 +4,84 @@ import Link from 'next/link'
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
+  const [showButton, setShowButton] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 30)
-    window.addEventListener('scroll', onScroll)
-    return () => window.removeEventListener('scroll', onScroll)
+    const handleScroll = () => {
+      // Efek background navbar saat di-scroll sedikit
+      setScrolled(window.scrollY > 30)
+      
+      // Logika memunculkan tombol schedule setelah melewati area Hero (sekitar 400px)
+      if (window.scrollY > 400) {
+        setShowButton(true)
+      } else {
+        setShowButton(false)
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
   return (
-    <nav className={`navbar${scrolled ? ' scrolled' : ''}`}>
-      <div className="navbar-inner">
-        {/* Logo */}
-        <Link href="/" className="navbar-logo">
-          <div className="logo-icon">
-            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-              <circle cx="14" cy="14" r="13" stroke="currentColor" strokeWidth="1.5"/>
-              <path d="M14 6 C14 6, 9 10, 9 15 C9 18.3 11.2 20.5 14 21 C16.8 20.5 19 18.3 19 15 C19 10 14 6 14 6Z" fill="currentColor" fillOpacity="0.7"/>
-              <line x1="14" y1="21" x2="14" y2="25" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b ${
+      scrolled ? 'bg-white/95 backdrop-blur-md border-gray-200 shadow-sm py-4' : 'bg-[#FAFAF7] border-transparent py-5'
+    }`}>
+      <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
+        
+        {/* LOGO */}
+        <Link href="/" className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-full bg-[#8FA38F]/30 border-2 border-[#4A5E4A] flex items-center justify-center">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4A5E4A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 22V8" />
+              <path d="M12 16l-5-5" />
+              <path d="M12 11l-5-5" />
+              <path d="M12 16l5-5" />
+              <path d="M12 11l5-5" />
             </svg>
           </div>
-          <span className="logo-text">Ten Thirty Solutions</span>
+          <span className="font-bold text-[17px] text-gray-800">Ten Thirty Solutions</span>
         </Link>
 
-        {/* Desktop Nav */}
-        <ul className="navbar-links">
-          <li><Link href="/#services">Our Services</Link></li>
-          <li><Link href="/tentang-kami">Our Mission</Link></li>
-          <li><Link href="/#testimonials">Testimonials</Link></li>
-        </ul>
+        {/* DESKTOP LINKS */}
+        <div className="hidden md:flex items-center gap-10">
+          <Link href="/" className="text-sm font-bold text-gray-800 hover:text-[#8FA38F] transition-colors">Home</Link>
+          <Link href="/#about" className="text-sm font-bold text-gray-800 hover:text-[#8FA38F] transition-colors">About Us</Link>
+          <Link href="/#services" className="text-sm font-bold text-gray-800 hover:text-[#8FA38F] transition-colors">Services</Link>
+          <Link href="/#testimonials" className="text-sm font-bold text-gray-800 hover:text-[#8FA38F] transition-colors">Testimonials</Link>
+          
+          {/* SCHEDULE BUTTON (Muncul perlahan saat scroll) */}
+          <Link 
+            href="/schedule" 
+            className={`bg-[#8FA38F] hover:bg-[#7A8B7A] text-white px-7 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 ${
+              showButton ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 -translate-y-2 pointer-events-none'
+            }`}
+          >
+            Schedule
+          </Link>
+        </div>
 
-        {/* CTA */}
-        <Link href="/appointment" className="btn-appointment">
-          Appointment
-        </Link>
-
-        {/* Mobile hamburger */}
-        <button className="hamburger" onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu">
-          <span></span><span></span><span></span>
+        {/* MOBILE HAMBURGER */}
+        <button className="md:hidden flex flex-col gap-1.5" onClick={() => setMenuOpen(!menuOpen)}>
+          <span className="block w-6 h-0.5 bg-gray-800"></span>
+          <span className="block w-6 h-0.5 bg-gray-800"></span>
+          <span className="block w-6 h-0.5 bg-gray-800"></span>
         </button>
       </div>
 
-      {/* Mobile Menu */}
+      {/* MOBILE MENU */}
       {menuOpen && (
-        <div className="mobile-menu">
-          <Link href="/#services" onClick={() => setMenuOpen(false)}>Our Services</Link>
-          <Link href="/tentang-kami" onClick={() => setMenuOpen(false)}>Our Mission</Link>
-          <Link href="/#testimonials" onClick={() => setMenuOpen(false)}>Testimonials</Link>
-          <Link href="/appointment" className="btn-appointment" onClick={() => setMenuOpen(false)}>Appointment</Link>
+        <div className="md:hidden absolute top-full left-0 w-full bg-white border-b border-gray-200 py-4 px-6 flex flex-col gap-4 shadow-lg">
+          <Link href="/" onClick={() => setMenuOpen(false)} className="font-semibold text-gray-700">Home</Link>
+          <Link href="/#about" onClick={() => setMenuOpen(false)} className="font-semibold text-gray-700">About Us</Link>
+          <Link href="/#services" onClick={() => setMenuOpen(false)} className="font-semibold text-gray-700">Services</Link>
+          <Link href="/#testimonials" onClick={() => setMenuOpen(false)} className="font-semibold text-gray-700">Testimonials</Link>
+          <Link href="/schedule" onClick={() => setMenuOpen(false)} className="bg-[#8FA38F] text-white px-4 py-2 rounded-full font-semibold text-center w-full mt-2">
+            Schedule
+          </Link>
         </div>
       )}
-
-      <style jsx>{`
-        .navbar {
-          position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-          transition: var(--transition);
-          padding: 0 24px;
-        }
-        .navbar.scrolled {
-          background: rgba(245, 244, 240, 0.95);
-          backdrop-filter: blur(12px);
-          box-shadow: 0 1px 20px rgba(26,42,26,0.08);
-        }
-        .navbar-inner {
-          max-width: 1200px; margin: 0 auto;
-          display: flex; align-items: center; gap: 32px;
-          height: 68px;
-        }
-        .navbar-logo {
-          display: flex; align-items: center; gap: 10px;
-          color: var(--color-primary-dark);
-          font-weight: 500; font-size: 15px; white-space: nowrap;
-        }
-        .logo-icon { color: var(--color-primary); flex-shrink: 0; }
-        .navbar-links {
-          display: flex; list-style: none; gap: 32px;
-          margin-left: auto;
-        }
-        .navbar-links a {
-          font-size: 14px; color: var(--color-text-muted);
-          transition: color var(--transition); font-weight: 400;
-        }
-        .navbar-links a:hover { color: var(--color-primary-dark); }
-        .btn-appointment {
-          background: var(--color-primary-dark);
-          color: var(--color-white);
-          padding: 9px 20px; border-radius: var(--radius-sm);
-          font-size: 14px; font-weight: 500;
-          transition: background var(--transition);
-          white-space: nowrap;
-        }
-        .btn-appointment:hover { background: var(--color-primary); }
-        .hamburger {
-          display: none; flex-direction: column; gap: 5px;
-          padding: 4px; margin-left: auto;
-        }
-        .hamburger span {
-          display: block; width: 22px; height: 2px;
-          background: var(--color-primary-dark); border-radius: 2px;
-        }
-        .mobile-menu {
-          display: flex; flex-direction: column; gap: 4px;
-          background: var(--color-white); padding: 16px 24px 20px;
-          border-bottom: 1px solid var(--color-bg-card);
-        }
-        .mobile-menu a {
-          padding: 10px 0; font-size: 15px;
-          color: var(--color-text-muted); border-bottom: 1px solid var(--color-bg-card);
-        }
-        .mobile-menu .btn-appointment {
-          margin-top: 12px; text-align: center;
-          background: var(--color-primary-dark); color: var(--color-white);
-          padding: 12px; border-radius: var(--radius-sm);
-          border: none;
-        }
-        @media (max-width: 768px) {
-          .navbar-links { display: none; }
-          .btn-appointment:not(.mobile-menu .btn-appointment) { display: none; }
-          .hamburger { display: flex; }
-        }
-      `}</style>
     </nav>
   )
 }

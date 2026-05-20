@@ -31,8 +31,8 @@ export default function HeroSection({ content = DEFAULT_HERO }) {
           <h1 className="hero-headline">{content.headline}</h1>
           <p className="hero-sub">{content.subtext}</p>
           <div className="hero-actions">
-            <Link href="/appointment" className="btn-primary">Appointment</Link>
-            <button className="btn-ghost">About us</button>
+            <Link href="/schedule" className="btn-primary">Schedule</Link>
+            <Link href="/#about" className="btn-ghost">About us</Link>
           </div>
         </div>
 
@@ -118,14 +118,21 @@ export default function HeroSection({ content = DEFAULT_HERO }) {
           max-width: 480px; margin-bottom: 36px;
         }
         .hero-actions { display: flex; gap: 14px; align-items: center; }
+        /* Ganti class .btn-primary pada style jsx Anda menjadi seperti ini: */
         .btn-primary {
-          background: var(--color-white);
-          color: var(--color-primary-dark);
-          padding: 12px 28px; border-radius: var(--radius-sm);
-          font-weight: 500; font-size: 15px;
+          background: #8FA38F; /* Mengikuti warna navbar */
+          color: var(--color-white);
+          padding: 12px 36px; /* Padding dilebarkan agar bentuknya pill/elips */
+          border-radius: 50px; /* Radius 50px untuk bentuk pill sempurna */
+          font-weight: 600; 
+          font-size: 15px;
           transition: all var(--transition);
+          display: inline-block;
         }
-        .btn-primary:hover { background: var(--color-bg); transform: translateY(-1px); }
+        .btn-primary:hover { 
+          background: #7A8B7A; 
+          transform: translateY(-2px); 
+        }
         .btn-ghost {
           color: rgba(250,250,247,0.8);
           font-size: 15px; padding: 12px 20px;
