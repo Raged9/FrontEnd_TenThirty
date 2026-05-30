@@ -147,7 +147,7 @@ export default function AdminLoginPage() {
           padding: 40px 36px 32px;
           width: 100%; max-width: 360px;
           display: flex; flex-direction: column; align-items: center;
-          box-shadow: 6px 6px 0px rgba(0,0,0,0.18);
+          box-shadow: 10px 10px 0px rgba(0,0,0,0.3);
         }
 
         .logo { margin-bottom: 16px; }
