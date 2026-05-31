@@ -62,6 +62,7 @@ function DrumScroller({ values, selected, onSelect }) {
 
 export default function SchedulePage() {
   const today = new Date()
+  const todayUTC = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()))
   const [currentYear, setCurrentYear] = useState(today.getFullYear())
   const [currentMonth, setCurrentMonth] = useState(today.getMonth())
   const [selectedDate, setSelectedDate] = useState(null)
@@ -88,14 +89,14 @@ export default function SchedulePage() {
   }
 
   const getScheduleForDate = (dateNum) => {
-    const d = new Date(currentYear, currentMonth, dateNum)
     return schedules.find(s => {
       const sd = new Date(s.date)
-      return sd.getFullYear() === d.getFullYear() &&
-             sd.getMonth() === d.getMonth() &&
-             sd.getDate() === d.getDate()
+      return sd.getUTCFullYear() === currentYear &&
+            sd.getUTCMonth() === currentMonth &&
+            sd.getUTCDate() === dateNum
     })
   }
+
 
   const handleDateClick = (dateNum) => {
     setSelectedDate(dateNum)
@@ -114,10 +115,9 @@ export default function SchedulePage() {
     if (!selectedDate) return
     setSaving(true)
     try {
-      const date = new Date(currentYear, currentMonth, selectedDate)
+      const date = new Date(Date.UTC(currentYear, currentMonth, selectedDate, 12, 0, 0))
       const existing = getScheduleForDate(selectedDate)
 
-      // ✅ Convert to 24h before saving
       const startTime24 = to24h(startTime.h, startTime.m, startTime.period)
       const endTime24 = to24h(endTime.h, endTime.m, endTime.period)
 
@@ -150,6 +150,41 @@ export default function SchedulePage() {
     setSaving(false)
   }
 
+  const handleDelete = async (dateNum) => {
+  const existing = getScheduleForDate(dateNum)
+  if (!existing) return
+  if (!confirm(`Hapus jadwal ${dateNum} ${MONTHS[currentMonth]} ${currentYear}?`)) return
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/schedules/${existing._id}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    if (res.ok) {
+      showToast('Jadwal berhasil dihapus!')
+      setShowTimePicker(false)
+      fetchSchedules()
+    }
+  } catch { showToast('Gagal menghapus') }
+}
+
+const deleteOldSchedules = async () => {
+  if (!confirm('Hapus semua jadwal yang sudah lewat?')) return
+  try {
+    const past = schedules.filter(s => {
+      const sd = new Date(s.date)
+      return sd < new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()))
+    })
+    await Promise.all(past.map(s =>
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/schedules/${s._id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      })
+    ))
+    showToast(`${past.length} jadwal lama dihapus!`)
+    fetchSchedules()
+  } catch { showToast('Gagal menghapus') }
+}
+
   const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(''), 3000) }
   const prevMonth = () => {
     if (currentMonth === 0) { setCurrentMonth(11); setCurrentYear(y => y - 1) }
@@ -171,6 +206,11 @@ export default function SchedulePage() {
     <div className="schedule-page">
       {toast && <div className="toast">{toast}</div>}
 
+      <div className="toolbar">
+        <button className="btn-clean" onClick={deleteOldSchedules}>
+          Hapus Jadwal Lewat
+        </button>
+      </div>
       <div className="top-row">
         {/* ── Calendar card ── */}
         <div className="card calendar-card">
@@ -193,21 +233,21 @@ export default function SchedulePage() {
             {Array.from({ length: totalCells }).map((_, i) => {
               const dateNum = i - firstDay + 1
               const isValid = dateNum >= 1 && dateNum <= daysInMonth
-              const isToday = isValid && dateNum === today.getDate() &&
-                              currentMonth === today.getMonth() && currentYear === today.getFullYear()
               const isSelected = isValid && dateNum === selectedDate
               const hasSchedule = isValid && !!getScheduleForDate(dateNum)
-              const isPast = isValid && new Date(currentYear, currentMonth, dateNum) < new Date(today.getFullYear(), today.getMonth(), today.getDate())
+              const isPast = isValid && new Date(Date.UTC(currentYear, currentMonth, dateNum)) < todayUTC
+              const isToday = isValid && new Date(Date.UTC(currentYear, currentMonth, dateNum)).getTime() === todayUTC.getTime()
 
               return (
                 <button
                   key={i}
                   className={['cal-cell',
                     !isValid ? 'empty' : '',
-                    isPast && !isSelected ? 'past' : '',
-                    isToday && !isSelected ? 'today' : '',
+                    isPast ? 'past' : '',
+                    isToday && !isSelected && !isPast ? 'today' : '',
                     isSelected ? 'selected' : '',
-                    hasSchedule && !isSelected ? 'has-schedule' : '',
+                    hasSchedule && !isPast && !isSelected ? 'has-schedule' : '',
+                    hasSchedule && isPast ? 'has-schedule-past' : '',
                   ].join(' ')}
                   onClick={() => isValid && handleDateClick(dateNum)}
                   disabled={!isValid}
@@ -242,6 +282,7 @@ export default function SchedulePage() {
 
             <div className="tp-actions">
               <button className="btn-cancel" onClick={() => setShowTimePicker(false)}>Cancel</button>
+              <button className="btn-delete" onClick={() => handleDelete(selectedDate)}>Hapus</button>
               <button className="btn-save" onClick={handleSave} disabled={saving}>
                 {saving ? 'Saving...' : 'Save'}
               </button>
@@ -325,7 +366,7 @@ export default function SchedulePage() {
         }
         .cal-cell:hover:not(.empty):not(:disabled):not(.past) { background: var(--color-bg); }
         .cal-cell.empty { visibility: hidden; }
-        .cal-cell.past { color: #ccc; cursor: default; }
+        .cal-cell.past { color: #ccc; cursor: not-allowed; }
         .cal-cell.today {
           background: var(--color-primary-dark); color: white;
           font-weight: 700; border-radius: 50%;
@@ -338,6 +379,11 @@ export default function SchedulePage() {
         }
         .cal-cell.has-schedule {
           background: var(--color-primary); color: white; border-radius: 8px;
+        }
+        .cal-cell.has-schedule-past {
+          background: var(--color-bg-card); color: #aaa;
+          border-radius: 8px; cursor: not-allowed;
+          text-decoration: line-through;
         }
 
         /* ── Info card ── */
@@ -377,7 +423,7 @@ export default function SchedulePage() {
         }
 
         .tp-actions {
-          display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+          display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 24px;
         }
         .btn-cancel {
           padding: 12px; border-radius: 10px;
@@ -395,6 +441,25 @@ export default function SchedulePage() {
         }
         .btn-save:hover:not(:disabled) { opacity: 0.85; }
         .btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-delete {
+          padding: 12px; border-radius: 10px;
+          background: rgba(192,57,43,0.3);
+          border: 1px solid rgba(192,57,43,0.4);
+          color: #ffaaaa; font-size: 14px;
+          cursor: pointer; font-family: var(--font-body);
+          transition: background 0.15s;
+        }
+        .btn-delete:hover { background: rgba(192,57,43,0.5); }
+
+        .toolbar { display: flex; justify-content: flex-end; margin-bottom: 16px; }
+        .btn-clean {
+          padding: 8px 16px; background: rgba(192,57,43,0.1);
+          border: 1px solid rgba(192,57,43,0.3);
+          border-radius: 8px; color: #c0392b;
+          font-size: 13px; cursor: pointer; font-family: var(--font-body);
+          transition: all 0.2s;
+        }
+        .btn-clean:hover { background: rgba(192,57,43,0.2); }
       `}</style>
     </div>
   )
