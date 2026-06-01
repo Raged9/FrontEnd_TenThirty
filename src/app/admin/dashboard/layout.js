@@ -1,99 +1,206 @@
 'use client'
-
+import { useEffect, useState } from 'react'
+import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
-import { useState } from 'react'
 
 const MENU = [
-  { label: 'Schedules', href: '/admin/dashboard/schedule', icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /> },
-  { label: 'Site Content', href: '/admin/dashboard/content', icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2.5 2.5 0 00-2.5-2.5H15" /> },
-  { label: 'Upload', href: '/admin/dashboard/upload', icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /> },
-  { label: 'Email', href: '/admin/dashboard/email', icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /> },
-  { label: 'Portofolio', href: '/admin/dashboard/portofolio', icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /> },
+  {
+    label: 'Sales',
+    href: '/admin/dashboard',
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+      </svg>
+    ),
+  },
+  {
+    label: 'Schedule',
+    href: '/admin/dashboard/schedule',
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+        <rect x="3" y="4" width="18" height="18" rx="2"/>
+        <line x1="16" y1="2" x2="16" y2="6"/>
+        <line x1="8" y1="2" x2="8" y2="6"/>
+        <line x1="3" y1="10" x2="21" y2="10"/>
+      </svg>
+    ),
+  },
+  {
+    label: 'Content',
+    href: '/admin/dashboard/content',
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+      </svg>
+    ),
+  },
+  {
+    label: 'Upload',
+    href: '/admin/dashboard/upload',
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+        <polyline points="16 16 12 12 8 16"/>
+        <line x1="12" y1="12" x2="12" y2="21"/>
+        <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/>
+      </svg>
+    ),
+  },
+  {
+    label: 'Email',
+    href: '/admin/dashboard/email',
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+        <polyline points="22,6 12,13 2,6"/>
+      </svg>
+    ),
+  },
+  {
+    label: 'Portofolio',
+    href: '/admin/dashboard/portofolio',
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+        <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+      </svg>
+    ),
+  },
 ]
 
 export default function AdminLayout({ children }) {
-  const pathname = usePathname()
   const router = useRouter()
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const pathname = usePathname()
+  const [checking, setChecking] = useState(true)
+
+  useEffect(() => {
+    const token = localStorage.getItem('admin_token')
+    if (!token) {
+      router.replace('/admin/login')
+    } else {
+      setChecking(false)
+    }
+  }, [router])
 
   const handleLogout = () => {
     localStorage.removeItem('admin_token')
     router.push('/admin/login')
   }
 
+  if (checking) return null
+
   return (
-    <div className="min-h-screen admin-bg-gradient flex font-sans">
-      {/* Sidebar - Liquid Glass */}
-      <aside className={`w-72 glass-sidebar fixed inset-y-0 left-0 transform ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 transition-transform duration-300 ease-in-out z-50 flex flex-col`}>
-        <div className="p-8">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-8 h-8 rounded-xl bg-forest flex items-center justify-center shadow-lg shadow-forest/30">
-              <span className="text-white font-bold text-xl">T</span>
-            </div>
-            <h1 className="text-xl font-bold text-forest tracking-tight">Ten Thirty</h1>
-          </div>
-          <p className="text-xs font-semibold uppercase tracking-widest text-sage ml-11">Admin Portal</p>
+    <div className="admin-wrap">
+      {/* Top Navbar */}
+      <nav className="admin-nav">
+        <div className="admin-nav-logo">
+          <svg width="32" height="32" viewBox="0 0 28 28" fill="none">
+            <circle cx="14" cy="14" r="13" stroke="var(--color-primary-dark)" strokeWidth="1.5"/>
+            <path d="M14 6C14 6 9 10 9 15C9 18.3 11.2 20.5 14 21C16.8 20.5 19 18.3 19 15C19 10 14 6 14 6Z"
+                  fill="var(--color-primary-dark)" fillOpacity="0.7"/>
+            <line x1="14" y1="21" x2="14" y2="25" stroke="var(--color-primary-dark)" strokeWidth="1.5" strokeLinecap="round"/>
+          </svg>
+          <span>Ten Thirty Solutions</span>
         </div>
+        <div className="admin-nav-links">
+          <Link href="/">Home</Link>
+          <Link href="#">How it Work</Link>
+          <Link href="#">Rental Details</Link>
+          <Link href="#">Why Choose Us</Link>
+          <Link href="#">Testimonial</Link>
+          <span className="nav-divider"/>
+          <Link href="#">Register</Link>
+          <button className="btn-logout" onClick={handleLogout}>Log Out</button>
+        </div>
+      </nav>
 
-        <nav className="flex-1 px-4 space-y-2 mt-4">
-          {MENU.map((item) => {
-            const isActive = pathname === item.href
-            return (
-              <Link key={item.label} href={item.href}>
-                <div className={`flex items-center gap-4 px-5 py-3.5 rounded-2xl transition-all duration-300 group cursor-pointer ${
-                  isActive 
-                    ? 'bg-forest text-white shadow-md shadow-forest/20' 
-                    : 'text-slate-600 hover:bg-white/50 hover:text-forest'
-                }`}>
-                  <svg className={`w-5 h-5 ${isActive ? 'text-mint' : 'text-slate-400 group-hover:text-forest transition-colors'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    {item.icon}
-                  </svg>
-                  <span className="font-medium text-sm">{item.label}</span>
-                </div>
+      <div className="admin-body">
+        {/* Sidebar */}
+        <aside className="admin-sidebar">
+          <p className="sidebar-label">Menu</p>
+          <nav className="sidebar-nav">
+            {MENU.map(item => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`sidebar-item${pathname === item.href ? ' active' : ''}`}
+              >
+                <span className="sidebar-icon">{item.icon}</span>
+                <span>{item.label}</span>
               </Link>
-            )
-          })}
-        </nav>
+            ))}
+          </nav>
+        </aside>
 
-        <div className="p-6">
-          <button 
-            onClick={handleLogout}
-            className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-2xl text-sm font-bold text-red-500 bg-red-50 hover:bg-red-100 transition-colors"
-          >
-            Log Out
-          </button>
-        </div>
-      </aside>
-
-      {/* Area Konten Utama */}
-      <main className="flex-1 lg:ml-72 min-w-0 flex flex-col">
-        {/* Header Transparan */}
-        <header className="glass-header h-20 px-8 flex items-center justify-between">
-          <button 
-            className="lg:hidden p-2 rounded-xl bg-white/50 text-forest"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
-          </button>
-          <div className="ml-auto flex items-center gap-4">
-            <div className="text-right hidden sm:block">
-              <p className="text-sm font-bold text-slate-800">Admin Utama</p>
-              <p className="text-xs font-medium text-slate-500">Superadmin</p>
-            </div>
-            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-forest to-emerald p-0.5">
-              <div className="w-full h-full rounded-full bg-white border-2 border-white overflow-hidden">
-                <img src={`https://ui-avatars.com/api/?name=Admin&background=fff&color=1a472a`} alt="Avatar" />
-              </div>
-            </div>
-          </div>
-        </header>
-
-        {/* Konten Halaman Injeksi */}
-        <div className="p-6 md:p-10">
+        {/* Main Content */}
+        <main className="admin-main">
           {children}
-        </div>
-      </main>
+        </main>
+      </div>
+
+      <style jsx>{`
+        .admin-wrap { min-height: 100vh; display: flex; flex-direction: column; background: var(--color-bg); }
+
+        /* Navbar */
+        .admin-nav {
+          height: 60px; background: var(--color-white);
+          border-bottom: 1px solid var(--color-bg-card);
+          display: flex; align-items: center; justify-content: space-between;
+          padding: 0 24px; position: sticky; top: 0; z-index: 50;
+        }
+        .admin-nav-logo {
+          display: flex; align-items: center; gap: 10px;
+          font-weight: 600; font-size: 15px; color: var(--color-text);
+        }
+        .admin-nav-links {
+          display: flex; align-items: center; gap: 20px;
+        }
+        .admin-nav-links a {
+          font-size: 13px; color: var(--color-text-muted);
+          transition: color var(--transition);
+        }
+        .admin-nav-links a:hover { color: var(--color-text); }
+        .nav-divider { width: 1px; height: 20px; background: var(--color-bg-card); }
+        .btn-logout {
+          background: var(--color-primary-dark); color: white;
+          padding: 7px 18px; border-radius: var(--radius-sm);
+          font-size: 13px; font-weight: 500;
+          border: none; cursor: pointer; font-family: var(--font-body);
+        }
+
+        /* Body */
+        .admin-body { display: flex; flex: 1; }
+
+        /* Sidebar */
+        .admin-sidebar {
+          width: 200px; flex-shrink: 0;
+          background: var(--color-primary);
+          border-right: none;
+          padding: 28px 16px;
+          min-height: calc(100vh - 60px);
+        }
+        .sidebar-label {
+          font-size: 14px; font-weight: 600;
+          color: rgba(255,255,255,0.5); margin-bottom: 16px;
+          padding: 0 8px;
+        }
+        .sidebar-nav { display: flex; flex-direction: column; gap: 4px; }
+        .sidebar-item {
+          display: flex; align-items: center; gap: 12px;
+          padding: 10px 12px; border-radius: var(--radius-sm);
+          font-size: 14px; color: rgba(255,255,255,0.6);
+          transition: all var(--transition);
+        }
+        .sidebar-item:hover {
+          background: rgba(255,255,255,0.1); color: white;
+        }
+        .sidebar-item.active {
+          background: rgba(255,255,255,0.15); color: white;
+          font-weight: 500;
+        }
+        .sidebar-icon { display: flex; align-items: center; }
+
+        /* Main */
+        .admin-main { flex: 1; padding: 32px; overflow: auto; }
+      `}</style>
     </div>
   )
 }

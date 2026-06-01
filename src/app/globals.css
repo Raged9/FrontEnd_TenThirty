@@ -1,32 +1,26 @@
 @import "tailwindcss";
 
-@theme {
-  /* Palet Warna Premium Ten Thirty */
-  --color-forest: #1a472a;
-  --color-emerald: #2ecc71;
-  --color-mint: #a8f0c6;
-  --color-sage: #87b99c;
-  --color-glass-base: rgba(255, 255, 255, 0.4);
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
 }
 
-/* Base background dengan sentuhan gradient lembut agar efek "blur" glassmorphism bisa terlihat jelas */
-.admin-bg-gradient {
-  background-color: #f8fafc;
-  background-image: 
-    radial-gradient(at 0% 0%, rgba(168, 240, 198, 0.4) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, rgba(46, 204, 113, 0.1) 0px, transparent 50%);
-  background-attachment: fixed;
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
 }
 
-/* Utilitas Liquid Glass Reusable */
-.glass-sidebar {
-  @apply bg-white/40 backdrop-blur-2xl border-r border-white/60 shadow-[4px_0_24px_rgba(26,71,42,0.02)];
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
 }
 
-.glass-card {
-  @apply bg-white/50 backdrop-blur-lg border border-white/80 shadow-[0_8px_32px_rgba(26,71,42,0.05)] rounded-[24px] md:rounded-[32px] transition-all duration-300;
-}
-
-.glass-header {
-  @apply bg-white/30 backdrop-blur-xl border-b border-white/50 sticky top-0 z-40;
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
 }
