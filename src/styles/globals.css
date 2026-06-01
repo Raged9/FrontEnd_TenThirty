@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
 
 :root {
   --color-primary: #4a5e4a;
@@ -38,3 +39,380 @@ img { max-width: 100%; height: auto; display: block; }
 a { text-decoration: none; color: inherit; }
 
 button { cursor: pointer; border: none; background: none; font-family: var(--font-body); }
+
+
+
+
+/* 1. Base Variables & Typography */
+:root {
+  --apple-green-dark: #1a472a;
+  --apple-green-emerald: #2ecc71;
+  --apple-green-mint: #a8f0c6;
+  
+  /* Soft background gradient so the glass effect is visible */
+  --apple-bg: linear-gradient(135deg, #f4f9f6 0%, #e8f5ed 100%);
+  
+  /* Liquid Glass Properties */
+  --glass-bg: rgba(255, 255, 255, 0.55);
+  --glass-border: rgba(255, 255, 255, 0.8);
+  --glass-shadow: 0 8px 32px 0 rgba(26, 71, 42, 0.06);
+}
+
+body, .admin-wrap {
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+}
+
+.admin-wrap {
+  background: var(--apple-bg) !important;
+  min-height: 100vh;
+}
+
+/* 2. Top Navbar (Frosted Glass) */
+.admin-nav {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  border-bottom: 1px solid var(--glass-border) !important;
+  box-shadow: var(--glass-shadow) !important;
+}
+
+.admin-nav-logo {
+  color: var(--apple-green-dark) !important;
+}
+
+.admin-nav-links a {
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+  color: var(--apple-green-dark) !important;
+  opacity: 0.7;
+}
+
+.admin-nav-links a:hover { 
+  opacity: 1; 
+}
+
+.btn-logout {
+  background: var(--apple-green-dark) !important;
+  border-radius: 24px !important; /* Soft pill shape */
+  transition: all 0.2s ease !important;
+}
+
+.btn-logout:hover {
+  background: var(--apple-green-emerald) !important;
+  box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3) !important;
+}
+
+/* 3. Sidebar (Floating Glass Panel) */
+.admin-sidebar {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  
+  /* Apple-style floating panel instead of a hard edge */
+  margin: 24px 0 24px 24px !important;
+  border-radius: 32px !important;
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: var(--glass-shadow) !important;
+  
+  min-height: calc(100vh - 108px) !important; /* Adjusts for navbar + margins */
+  padding: 24px 16px !important;
+}
+
+.sidebar-label {
+  color: var(--apple-green-dark) !important;
+  opacity: 0.5;
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 12px !important;
+  margin-bottom: 24px !important;
+}
+
+/* The fixed side-by-side buttons */
+.sidebar-item {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 14px !important;
+  padding: 14px 16px !important;
+  border-radius: 20px !important; /* Super rounded corners */
+  color: var(--apple-green-dark) !important;
+  font-weight: 600 !important;
+  font-size: 15px !important;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+  text-decoration: none !important;
+  opacity: 0.6;
+  margin-bottom: 8px !important;
+}
+
+.sidebar-item:hover {
+  background: rgba(255, 255, 255, 0.6) !important;
+  opacity: 1;
+  transform: translateY(-1px); /* Subtle lift effect */
+}
+
+/* Active Button State */
+.sidebar-item.active {
+  background: var(--apple-green-dark) !important;
+  color: white !important;
+  opacity: 1;
+  box-shadow: 0 8px 16px rgba(26, 71, 42, 0.25) !important; /* Inner glow/depth */
+}
+
+/* 4. Main Content Area Typography Tweaks */
+.admin-main {
+  padding: 32px 48px !important;
+  color: var(--apple-green-dark) !important;
+}
+
+.admin-main h1, .admin-main h2, .admin-main h3 {
+  font-weight: 700 !important;
+  color: var(--apple-green-dark) !important;
+  letter-spacing: -0.5px !important;
+}
+
+/* =========================================================
+   SALES DASHBOARD SPECIFIC STYLES
+   ========================================================= */
+
+.sales-container {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  animation: fadeIn 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Header & Spotlight Search */
+.sales-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+}
+
+.sales-title {
+  font-size: 28px;
+  margin-bottom: 8px;
+  color: var(--apple-green-dark);
+}
+
+.sales-subtitle {
+  color: var(--apple-green-dark);
+  opacity: 0.7;
+  font-size: 15px;
+  max-width: 600px;
+}
+
+.search-bar-glass {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 14px 20px;
+  width: 320px;
+  box-shadow: var(--glass-shadow);
+  transition: all 0.3s ease;
+}
+
+.search-bar-glass:focus-within {
+  box-shadow: 0 8px 32px 0 rgba(46, 204, 113, 0.15);
+  border-color: rgba(46, 204, 113, 0.4);
+}
+
+.search-bar-glass svg {
+  color: var(--apple-green-dark);
+  opacity: 0.5;
+}
+
+.search-bar-glass input {
+  border: none !important;
+  background: transparent !important;
+  outline: none;
+  width: 100%;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 14px;
+  color: var(--apple-green-dark) !important;
+}
+
+.search-bar-glass input::placeholder {
+  color: var(--apple-green-dark);
+  opacity: 0.4;
+}
+
+/* Reusable Glass Panel Class */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid var(--glass-border);
+  border-radius: 28px;
+  box-shadow: var(--glass-shadow);
+  padding: 28px;
+  transition: transform 0.3s ease;
+}
+
+/* Top Metric Cards */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.metric-card:hover {
+  transform: translateY(-2px);
+}
+
+.metric-card h3 {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.6;
+  margin-bottom: 12px;
+  color: var(--apple-green-dark);
+}
+
+.metric-value {
+  font-size: 40px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--apple-green-dark);
+  letter-spacing: -1px;
+}
+
+.metric-trend {
+  font-size: 13px;
+  font-weight: 600;
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 12px;
+}
+
+.metric-trend.positive {
+  background: rgba(46, 204, 113, 0.15);
+  color: #1b8a47;
+}
+
+.metric-trend.neutral {
+  background: rgba(26, 71, 42, 0.08);
+  color: var(--apple-green-dark);
+}
+
+/* Chart Area */
+.chart-container {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  min-height: 420px;
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chart-header h2 {
+  font-size: 20px;
+  margin: 0;
+  color: var(--apple-green-dark);
+}
+
+.filter-btn {
+  background: rgba(26, 71, 42, 0.05);
+  border: 1px solid rgba(26, 71, 42, 0.1);
+  padding: 10px 18px;
+  border-radius: 20px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--apple-green-dark);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+  background: rgba(26, 71, 42, 0.1);
+}
+
+/* Data Visualization Layout */
+.chart-visual {
+  display: flex;
+  gap: 16px;
+  flex: 1;
+  position: relative;
+}
+
+.y-axis {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  color: var(--apple-green-dark);
+  opacity: 0.4;
+  font-size: 13px;
+  font-weight: 600;
+  padding-bottom: 30px;
+}
+
+.chart-area {
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-bottom: 30px;
+}
+
+.grid-line {
+  height: 1px;
+  width: 100%;
+  border-top: 1px dashed rgba(26, 71, 42, 0.15);
+}
+
+.x-axis {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 5px;
+}
+
+.data-point {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  color: var(--apple-green-dark);
+  font-size: 13px;
+  font-weight: 600;
+  opacity: 0.6;
+}
+
+.data-point .node {
+  width: 10px;
+  height: 10px;
+  background: var(--apple-green-emerald);
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px rgba(46, 204, 113, 0.2);
+  z-index: 2;
+}
+
+.trend-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: calc(100% - 30px);
+  z-index: 1;
+  pointer-events: none;
+  filter: drop-shadow(0 8px 12px rgba(46, 204, 113, 0.3));
+}

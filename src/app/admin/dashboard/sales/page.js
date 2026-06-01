@@ -1,208 +1,165 @@
-// File: FrontEnd_TenThirty/src/app/admin/dashboard/sales/page.js
-'current'
 'use client'
+import React, { useState, useEffect } from 'react'
 
-import { useState, useEffect } from 'react'
-import { adminFetch } from '@/lib/api'
-
-export default function SalesDashboard() {
-  const [chartData, setChartData] = useState([])
+export default function SalesPage() {
+  // 1. State for your real backend data
+  const [salesData, setSalesData] = useState({
+    totalClients: 0,
+    monthlySchedules: 0,
+    newProspects: 0,
+    monthlyData: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] // 12 months array
+  })
   const [searchQuery, setSearchQuery] = useState('')
-  const [searchResults, setSearchResults] = useState([])
-  const [showDropdown, setShowDropdown] = useState(false)
-  const [selectedClient, setSelectedClient] = useState(null)
   const [loading, setLoading] = useState(true)
 
+  // 2. Fetch data from your Express backend
   useEffect(() => {
-    fetchDashboardData()
+    const fetchSalesData = async () => {
+      try {
+        const token = localStorage.getItem('admin_token')
+        
+        // Update this URL if your backend runs on a different port
+        const response = await fetch('http://localhost:5000/api/sales', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
+        
+        const data = await response.json()
+        
+        if (response.ok) {
+          setSalesData({
+            totalClients: data.totalClients || 0,
+            monthlySchedules: data.monthlySchedules || 0,
+            newProspects: data.newProspects || 0,
+            // Assuming the backend returns an array of 12 numbers for the chart
+            monthlyData: data.monthlyData || [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+          })
+        }
+      } catch (error) {
+        console.error("Error fetching sales data:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchSalesData()
   }, [])
 
-  // Mengambil data awal statistik grafik bulanan
-  const fetchDashboardData = async () => {
-    try {
-      const res = await adminFetch('/api/sales/stats')
-      if (res.ok) {
-        const result = await res.json()
-        setChartData(result.data)
-      }
-    } catch (err) {
-      console.error('Gagal mengambil data statistik:', err)
-    } finally {
-      setLoading(false)
-    }
+  // 3. Dynamic Chart Logic - Calculates X/Y coordinates for the SVG path
+  const maxDataValue = Math.max(...salesData.monthlyData, 5) // Base scale to prevent flatlining at 0
+  
+  const generateTrendLine = () => {
+    return salesData.monthlyData.map((val, index) => {
+      const x = (index / 11) * 100 // 11 segments across the X axis
+      const y = 100 - ((val / maxDataValue) * 100) // Invert Y axis for SVG drawing
+      return `${index === 0 ? 'M' : 'L'} ${x} ${y}`
+    }).join(' ')
   }
 
-  // Menangani pencarian real-time saat admin mengetik kata kunci
-  const handleSearchChange = async (e) => {
-    const val = e.target.value
-    setSearchQuery(val)
-
-    if (val.trim().length > 1) {
-      try {
-        const res = await adminFetch(`/api/sales/clients?search=${val}`)
-        if (res.ok) {
-          const result = await res.json()
-          setSearchResults(result.data)
-          setShowDropdown(true)
-        }
-      } catch (err) {
-        console.error('Pencarian error:', err)
-      }
-    } else {
-      setSearchResults([])
-      setShowDropdown(false)
-    }
+  if (loading) {
+    return <div className="sales-container"><p>Loading dashboard...</p></div>
   }
-
-  // Parameter kalkulasi dimensi untuk Pure SVG Line Chart
-  const padding = 40
-  const chartHeight = 260
-  const chartWidth = 700
-  const maxValue = chartData.length > 0 ? Math.max(...chartData.map(d => d.value), 5) : 5
-
-  // Membuat titik koordinat (X, Y) secara otomatis berdasarkan data bulanan
-  const points = chartData.map((d, index) => {
-    const x = padding + (index * (chartWidth - padding * 2)) / (chartData.length - 1)
-    const y = chartHeight - padding - (d.value * (chartHeight - padding * 2)) / maxValue
-    return { x, y, ...d }
-  })
-
-  const pathD = points.reduce((acc, p, i) => i === 0 ? `M ${p.x} ${p.y}` : `${acc} L ${p.x} ${p.y}`, '')
 
   return (
-    <div className="p-6 max-w-5xl mx-auto bg-slate-50 min-h-screen text-slate-800">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900 mb-2">Sales & Client Trend Dashboard</h1>
-        <p className="text-sm text-slate-500">Pantau fluktuasi pengajuan jadwal kemitraan dan cari berkas data klien secara instan.</p>
-      </div>
-
-      {/* Bagian Atas: Komponen Pencarian Interaktif Dropdown */}
-      <div className="relative mb-8 max-w-md bg-white p-4 rounded-xl shadow-xs border border-slate-200">
-        <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">Pencarian Data Klien / Prospek</label>
-        <div className="relative">
-          <input
-            type="text"
-            className="w-full px-4 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50"
-            placeholder="Ketik nama klien, email, atau instansi..."
+    <div className="sales-container">
+      {/* Header & Spotlight Search */}
+      <header className="sales-header">
+        <div>
+          <h1 className="sales-title">Sales & Client Trend Dashboard</h1>
+          <p className="sales-subtitle">Pantau fluktuasi pengajuan jadwal kemitraan dan cari berkas data klien secara instan.</p>
+        </div>
+        <div className="search-bar-glass">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input 
+            type="text" 
+            placeholder="Ketik nama klien, email, atau..." 
             value={searchQuery}
-            onChange={handleSearchChange}
-            onFocus={() => searchQuery && setSearchResults.length > 0 && setShowDropdown(true)}
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
-          {searchQuery && (
-            <button 
-              onClick={() => { setSearchQuery(''); setShowDropdown(false); setSelectedClient(null); }}
-              className="absolute right-3 top-2.5 text-xs text-slate-400 hover:text-slate-600"
-            >
-              Clear
-            </button>
-          )}
         </div>
+      </header>
 
-        {/* Dropdown Hasil Pencarian Interaktif */}
-        {showDropdown && (
-          <div className="absolute left-4 right-4 mt-1 bg-white border border-slate-200 rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto divide-y divide-slate-100">
-            {searchResults.map((client) => (
-              <div
-                key={client._id}
-                className="p-3 text-sm hover:bg-slate-50 cursor-pointer transition-colors"
-                onClick={() => {
-                  setSelectedClient(client)
-                  setShowDropdown(false)
-                }}
-              >
-                <p className="font-semibold text-slate-900">{client.name}</p>
-                <p className="text-xs text-slate-500">{client.email} • {client.service || 'Umum'}</p>
-              </div>
-            ))}
-          </div>
-        )}
+      {/* Symmetrical Top Metrics with Real Data */}
+      <div className="metrics-grid">
+        <div className="metric-card glass-panel">
+          <h3>Total Klien Aktif</h3>
+          <div className="metric-value">{salesData.totalClients}</div>
+          <div className="metric-trend positive">Terverifikasi</div>
+        </div>
+        <div className="metric-card glass-panel">
+          <h3>Jadwal Bulan Ini</h3>
+          <div className="metric-value">{salesData.monthlySchedules}</div>
+          <div className="metric-trend positive">Aktif</div>
+        </div>
+        <div className="metric-card glass-panel">
+          <h3>Prospek Baru</h3>
+          <div className="metric-value">{salesData.newProspects}</div>
+          <div className="metric-trend neutral">Menunggu Review</div>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-        {/* Bagian Kiri/Tengah: Visualisasi Grafik Tren Garis Besar */}
-        <div className="lg:col-span-2 bg-white p-6 rounded-xl shadow-xs border border-slate-200">
-          <h2 className="text-sm font-semibold text-slate-700 mb-4 uppercase tracking-wider">Fluktuasi Pengajuan Jadwal Bulanan</h2>
-          {loading ? (
-            <div className="h-64 flex items-center justify-center text-slate-400 text-sm">Memuat matriks data...</div>
-          ) : chartData.length === 0 ? (
-            <div className="h-64 flex items-center justify-center text-slate-400 text-sm">Belum ada data masuk di tahun ini.</div>
-          ) : (
-            <div className="w-full overflow-x-auto">
-              <svg viewBox={`0 0 ${chartWidth} ${chartHeight}`} className="w-full h-auto overflow-visible">
-                {/* Garis Horizontal Grid Kelipatan */}
-                {[0, 0.5, 1].map((ratio, i) => {
-                  const y = padding + ratio * (chartHeight - padding * 2)
-                  const labelVal = Math.round(maxValue - ratio * maxValue)
-                  return (
-                    <g key={i}>
-                      <line x1={padding} y1={y} x2={chartWidth - padding} y2={y} stroke="#e2e8f0" strokeDasharray="4 4" />
-                      <text x={padding - 10} y={y + 4} textAnchor="end" className="text-[10px] fill-slate-400 font-medium">{labelVal}</text>
-                    </g>
-                  )
-                })}
-
-                {/* Plot Garis Utama Tren */}
-                {pathD && (
-                  <path d={pathD} fill="none" stroke="#2563eb" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-                )}
-
-                {/* Titik Point Interaktif */}
-                {points.map((p, i) => (
-                  <g key={i} className="group cursor-pointer">
-                    <circle cx={p.x} cy={p.y} r="5" fill="#ffffff" stroke="#2563eb" strokeWidth="2" className="transition-all group-hover:r-7 group-hover:fill-blue-600" />
-                    {/* Tooltip Angka ketika Kursor Menyentuh Point */}
-                    <rect x={p.x - 18} y={p.y - 28} width="36" height="20" rx="4" className="fill-slate-900 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <text x={p.x} y={p.y - 15} textAnchor="middle" className="text-[10px] fill-white font-bold opacity-0 group-hover:opacity-100 transition-opacity">{p.value}</text>
-                    {/* Label Teks Nama Bulan (Jan - Des) */}
-                    <text x={p.x} y={chartHeight - padding + 20} textAnchor="middle" className="text-[10px] fill-slate-500 font-medium">{p.month}</text>
-                  </g>
-                ))}
-              </svg>
-            </div>
-          )}
+      {/* Main Trend Chart */}
+      <div className="chart-container glass-panel">
+        <div className="chart-header">
+          <h2>Fluktuasi Pengajuan Jadwal Bulanan</h2>
+          <button className="filter-btn">Tahun 2026 ▾</button>
         </div>
+        
+        <div className="chart-visual">
+           {/* Dynamic Y Axis based on max value */}
+           <div className="y-axis">
+             <span>{Math.ceil(maxDataValue)}</span>
+             <span>{Math.ceil(maxDataValue * 0.8)}</span>
+             <span>{Math.ceil(maxDataValue * 0.6)}</span>
+             <span>{Math.ceil(maxDataValue * 0.4)}</span>
+             <span>{Math.ceil(maxDataValue * 0.2)}</span>
+             <span>0</span>
+           </div>
+           
+           <div className="chart-area">
+             <div className="grid-line"></div>
+             <div className="grid-line"></div>
+             <div className="grid-line"></div>
+             <div className="grid-line"></div>
+             <div className="grid-line"></div>
+             <div className="grid-line"></div>
+             
+             {/* REAL DATA TREND LINE */}
+             <svg className="trend-line" preserveAspectRatio="none" viewBox="0 0 100 100">
+               <path 
+                 d={generateTrendLine()} 
+                 fill="none" 
+                 stroke="var(--apple-green-emerald)" 
+                 strokeWidth="3" 
+                 strokeLinecap="round" 
+                 strokeLinejoin="round" 
+               />
+             </svg>
 
-        {/* Bagian Kanan: Panel Detail Klien dari Dropdown */}
-        <div className="bg-white p-6 rounded-xl shadow-xs border border-slate-200 min-h-[340px]">
-          <h2 className="text-sm font-semibold text-slate-700 mb-4 uppercase tracking-wider">Spesifikasi Profil Klien</h2>
-          {selectedClient ? (
-            <div className="space-y-4 animate-fadeIn">
-              <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Nama Lengkap</span>
-                <p className="text-base font-semibold text-slate-900">{selectedClient.name}</p>
-              </div>
-              <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Kontak Email</span>
-                <p className="text-sm text-slate-600 font-medium break-all">{selectedClient.email}</p>
-              </div>
-              <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Nomor Telepon</span>
-                <p className="text-sm text-slate-600 font-medium">{selectedClient.phone || '-'}</p>
-              </div>
-              <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Spesifikasi Layanan</span>
-                <p className="text-sm bg-blue-50 text-blue-700 font-semibold px-2 py-1 rounded-md inline-block mt-1">
-                  {selectedClient.service}
-                </p>
-              </div>
-              <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Status Pengajuan</span>
-                <span className={`text-xs font-bold ml-2 px-2 py-0.5 rounded-full ${
-                  selectedClient.status === 'confirmed' ? 'bg-green-100 text-green-700' : 
-                  selectedClient.status === 'cancelled' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'
-                }`}>
-                  {selectedClient.status}
-                </span>
-              </div>
-            </div>
-          ) : (
-            <div className="h-56 flex flex-col items-center justify-center text-center text-slate-400 p-4 border border-dashed border-slate-200 rounded-lg">
-              <svg className="w-8 h-8 text-slate-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-              <p className="text-xs">Silakan pilih klien pada kolom pencarian di atas untuk memuat spesifikasi profil.</p>
-            </div>
-          )}
+             {/* Dynamic X Axis Nodes */}
+             <div className="x-axis">
+               {['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'].map((month, index) => {
+                 // Calculate the dot's height relative to the line
+                 const yPos = (salesData.monthlyData[index] / maxDataValue) * 100;
+                 return (
+                   <div key={month} className="data-point">
+                     <div 
+                       className="node" 
+                       style={{ 
+                         transform: `translateY(-${yPos}px)`, // Adjusts dot to match the line height
+                         marginBottom: '-10px'
+                       }}
+                     ></div>
+                     <span>{month}</span>
+                   </div>
+                 )
+               })}
+             </div>
+           </div>
         </div>
       </div>
     </div>
