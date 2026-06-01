@@ -182,20 +182,40 @@ export default function AdminLayout({ children }) {
           color: rgba(255,255,255,0.5); margin-bottom: 16px;
           padding: 0 8px;
         }
-        .sidebar-nav { display: flex; flex-direction: column; gap: 4px; }
+        
+        /* Updated Sidebar Button Styles */
+        .sidebar-nav { 
+          display: flex; 
+          flex-direction: column; 
+          gap: 8px; /* Increased gap to make them feel like distinct buttons */
+        }
+        
         .sidebar-item {
-          display: flex; align-items: center; gap: 12px;
-          padding: 10px 12px; border-radius: var(--radius-sm);
-          font-size: 14px; color: rgba(255,255,255,0.6);
-          transition: all var(--transition);
+          display: flex; 
+          align-items: center; 
+          gap: 12px; /* This keeps the icon and text side-by-side */
+          padding: 12px 16px; /* Added more padding to make it a button shape */
+          border-radius: var(--radius-sm, 8px);
+          font-size: 14px; 
+          color: rgba(255,255,255,0.7);
+          transition: all 0.2s ease-in-out;
+          border: 1px solid transparent;
+          text-decoration: none;
         }
+        
         .sidebar-item:hover {
-          background: rgba(255,255,255,0.1); color: white;
+          background: rgba(255,255,255,0.1); 
+          color: white;
+          border-color: rgba(255,255,255,0.2); /* Slight border on hover */
         }
+        
         .sidebar-item.active {
-          background: rgba(255,255,255,0.15); color: white;
-          font-weight: 500;
+          background: #ffffff; /* Solid background when selected */
+          color: var(--color-primary, #000); /* Color of text/icon flips to contrast the white background */
+          font-weight: 600;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* Drop shadow for button depth */
         }
+        
         .sidebar-icon { display: flex; align-items: center; }
 
         /* Main */
