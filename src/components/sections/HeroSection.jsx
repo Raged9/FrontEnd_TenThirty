@@ -1,8 +1,8 @@
+// src/components/sections/HeroSection.jsx
 'use client'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 
-// Ini nanti akan di-fetch dari backend CMS
 const DEFAULT_HERO = {
   headline: 'Septic System and Environmental Compliance Solutions',
   subtext: 'Helping Florida homeowners and businesses solve complex and critical environmental and compliance issues at affordable prices.',
@@ -12,11 +12,14 @@ const DEFAULT_HERO = {
   stat2_label: '10% Profits Annual Donation to Ten Thirty House',
   stat3_number: 'CAD',
   stat3_label: 'Certified, Advanced Designer & Inspector (FPI)',
-  hero_image: null, // nanti dari CMS
+  hero_image: null, 
 }
 
-export default function HeroSection({ content = DEFAULT_HERO }) {
+export default function HeroSection({ content }) {
   const [visible, setVisible] = useState(false)
+  
+  // Gabungkan data dari Backend dengan Default (mencegah teks kosong)
+  const finalContent = { ...DEFAULT_HERO, ...(content || {}) }
 
   useEffect(() => {
     const t = setTimeout(() => setVisible(true), 80)
@@ -26,39 +29,31 @@ export default function HeroSection({ content = DEFAULT_HERO }) {
   return (
     <section className={`hero${visible ? ' visible' : ''}`}>
       <div className="hero-inner">
-        {/* Left: Text */}
+        {/* Kiri: Text */}
         <div className="hero-text">
-          <h1 className="hero-headline">{content.headline}</h1>
-          <p className="hero-sub">{content.subtext}</p>
+          <h1 className="hero-headline">{finalContent.headline}</h1>
+          <p className="hero-sub">{finalContent.subtext}</p>
           <div className="hero-actions">
             <Link href="/schedule" className="btn-primary">Schedule</Link>
             <Link href="/#about" className="btn-ghost">About us</Link>
           </div>
         </div>
 
-        {/* Right: Image placeholder (CMS-ready) */}
+        {/* Kanan: Gambar Dinamis dari CMS */}
         <div className="hero-image-wrap">
-          {content.hero_image ? (
-            <img src={content.hero_image} alt="Ten Thirty Solutions" className="hero-img" />
+          {finalContent.hero_image ? (
+            <img src={finalContent.hero_image} alt="Ten Thirty Solutions" className="hero-img shadow-2xl" />
           ) : (
             <div className="hero-img-placeholder">
               <div className="eco-icon">
                 <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <circle cx="60" cy="60" r="40" stroke="rgba(255,255,255,0.3)" strokeWidth="1"/>
                   <circle cx="60" cy="60" r="28" stroke="rgba(255,255,255,0.2)" strokeWidth="1"/>
-                  {/* Sun */}
                   <circle cx="60" cy="32" r="8" fill="rgba(255,220,100,0.8)"/>
-                  {/* Leaf */}
-                  <path d="M60 60 C60 60 48 52 48 44 C48 37 54 32 60 32 C66 32 72 37 72 44 C72 52 60 60 60 60Z"
-                        fill="rgba(255,255,255,0.5)"/>
-                  {/* Wind */}
+                  <path d="M60 60 C60 60 48 52 48 44 C48 37 54 32 60 32 C66 32 72 37 72 44 C72 52 60 60 60 60Z" fill="rgba(255,255,255,0.5)"/>
                   <path d="M36 70 Q50 64 64 70" stroke="rgba(255,255,255,0.6)" strokeWidth="2" fill="none" strokeLinecap="round"/>
                   <path d="M40 78 Q54 72 68 78" stroke="rgba(255,255,255,0.4)" strokeWidth="2" fill="none" strokeLinecap="round"/>
-                  {/* Water */}
-                  <path d="M60 82 C56 78 52 75 52 71 C52 67 55.6 64 60 64 C64.4 64 68 67 68 71 C68 75 64 78 60 82Z"
-                        fill="rgba(150,200,255,0.7)"/>
-                  {/* Glow */}
-                  <circle cx="60" cy="60" r="55" stroke="rgba(255,255,255,0.08)" strokeWidth="1"/>
+                  <path d="M60 82 C56 78 52 75 52 71 C52 67 55.6 64 60 64 C64.4 64 68 67 68 71 C68 75 64 78 60 82Z" fill="rgba(150,200,255,0.7)"/>
                 </svg>
               </div>
             </div>
@@ -72,18 +67,18 @@ export default function HeroSection({ content = DEFAULT_HERO }) {
           <div className="stats-label">Stats</div>
           <div className="stats-grid">
             <div className="stat-item">
-              <span className="stat-num">{content.stat1_number}</span>
-              <span className="stat-desc">{content.stat1_label}</span>
+              <span className="stat-num">{finalContent.stat1_number}</span>
+              <span className="stat-desc">{finalContent.stat1_label}</span>
             </div>
             <div className="stat-divider"/>
             <div className="stat-item">
-              <span className="stat-num">{content.stat2_number}</span>
-              <span className="stat-desc">{content.stat2_label}</span>
+              <span className="stat-num">{finalContent.stat2_number}</span>
+              <span className="stat-desc">{finalContent.stat2_label}</span>
             </div>
             <div className="stat-divider"/>
             <div className="stat-item">
-              <span className="stat-num">{content.stat3_number}</span>
-              <span className="stat-desc">{content.stat3_label}</span>
+              <span className="stat-num">{finalContent.stat3_number}</span>
+              <span className="stat-desc">{finalContent.stat3_label}</span>
             </div>
           </div>
         </div>
@@ -118,21 +113,15 @@ export default function HeroSection({ content = DEFAULT_HERO }) {
           max-width: 480px; margin-bottom: 36px;
         }
         .hero-actions { display: flex; gap: 14px; align-items: center; }
-        /* Ganti class .btn-primary pada style jsx Anda menjadi seperti ini: */
         .btn-primary {
-          background: #8FA38F; /* Mengikuti warna navbar */
+          background: #8FA38F; /* Mengikuti warna desain baru */
           color: var(--color-white);
-          padding: 12px 36px; /* Padding dilebarkan agar bentuknya pill/elips */
-          border-radius: 50px; /* Radius 50px untuk bentuk pill sempurna */
-          font-weight: 600; 
-          font-size: 15px;
+          padding: 12px 36px; border-radius: 50px; /* Bentuk pill */
+          font-weight: 600; font-size: 15px;
           transition: all var(--transition);
           display: inline-block;
         }
-        .btn-primary:hover { 
-          background: #7A8B7A; 
-          transform: translateY(-2px); 
-        }
+        .btn-primary:hover { background: #7A8B7A; transform: translateY(-2px); }
         .btn-ghost {
           color: rgba(250,250,247,0.8);
           font-size: 15px; padding: 12px 20px;

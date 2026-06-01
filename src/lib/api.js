@@ -3,7 +3,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
 export async function fetchContent(section) {
   try {
     const res = await fetch(`${API_URL}/api/content/${section}`, {
-      next: { revalidate: 60 }, // ISR: revalidate every 60s
+      cache: 'no-store', // <-- Menginstruksikan Next.js agar selalu mengambil data terbaru (tanpa cache)
     })
     if (!res.ok) return null
     return res.json()

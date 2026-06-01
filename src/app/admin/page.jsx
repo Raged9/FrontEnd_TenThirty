@@ -31,27 +31,51 @@ export default function AdminDashboard() {
     setIsUploadingHero(true)
     const token = localStorage.getItem('admin_token')
     const formData = new FormData()
-    formData.append('image', heroFile) // 'image' harus sama dengan upload.single('image') di backend
+    formData.append('image', heroFile)
 
     try {
-      const res = await fetch('http://localhost:5000/api/upload', {
+      // 1. Upload ke Cloudinary
+      const resUpload = await fetch('http://localhost:5000/api/upload', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`
-          // Jangan set Content-Type, browser otomatis akan mengaturnya sebagai multipart/form-data
-        },
+        headers: { 'Authorization': `Bearer ${token}` },
         body: formData
       })
 
-      const data = await res.json()
-      if (res.ok) {
-        alert(`Berhasil! Gambar tersimpan di Cloudinary dengan URL:\n${data.url}`)
-        setHeroFile(null) // Reset input file setelah sukses
+      const uploadData = await resUpload.json()
+      
+      if (resUpload.ok) {
+        // 2a. Ambil teks/konten Hero lama dari database agar tidak tertimpa/hilang
+        const currentHeroRes = await fetch('http://localhost:5000/api/content/hero')
+        const currentContent = currentHeroRes.ok ? await currentHeroRes.json() : {}
+
+        // 2b. Gabungkan teks lama dengan URL gambar baru
+        const newContent = {
+          ...currentContent,
+          hero_image: uploadData.url
+        }
+
+        // 2c. Simpan ke database CMS dengan format yang benar
+        const resSave = await fetch('http://localhost:5000/api/content/hero', {
+          method: 'PUT',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}` 
+          },
+          body: JSON.stringify({ content: newContent }) // <-- Perbaikan UTAMA di sini
+        })
+
+        if (resSave.ok) {
+          alert("Berhasil! Gambar Hero sudah diperbarui di Halaman Utama.")
+          setHeroFile(null)
+        } else {
+          const errorData = await resSave.json()
+          alert(`Gambar terupload, tapi gagal disimpan: ${errorData.message}`)
+        }
       } else {
-        alert(`Gagal mengunggah: ${data.message || 'Periksa server Anda'}`)
+        alert(`Gagal mengunggah: ${uploadData.message || 'Error server'}`)
       }
     } catch (err) {
-      alert("Terjadi kesalahan koneksi saat mengunggah file ke server.")
+      alert("Terjadi kesalahan koneksi saat mengunggah file.")
     } finally {
       setIsUploadingHero(false)
     }
