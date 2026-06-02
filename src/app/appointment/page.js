@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+import ReCAPTCHA from 'react-google-recaptcha'
 
 const SERVICES = [
   { value: 'septic-design', label: 'Septic Design' },
@@ -30,12 +31,9 @@ export default function AppointmentPage() {
   const [selectedSchedule, setSelectedSchedule] = useState(null)
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
-  
-  // NEW: Added location to the initial form state
   const [form, setForm] = useState({ name: '', email: '', phone: '', service: '', location: '', notes: '' })
   const [error, setError] = useState('')
-
-  // NEW: Word limit configuration
+  const [captchaToken, setCaptchaToken] = useState(null)
   const MAX_WORDS = 20;
   const currentWords = form.location.trim().split(/\s+/).filter(Boolean).length;
 
@@ -84,12 +82,15 @@ export default function AppointmentPage() {
     if (!selectedSchedule) {
       setError('Pilih jadwal terlebih dahulu'); return
     }
+    if (!captchaToken) {
+      setError('Silakan selesaikan validasi CAPTCHA terlebih dahulu'); return
+    }
     setSubmitting(true)
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/appointments`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, scheduleId: selectedSchedule._id }),
+        body: JSON.stringify({ ...form, scheduleId: selectedSchedule._id, captchaToken }),
       })
       if (res.ok) {
         setStep(3)
@@ -282,6 +283,14 @@ export default function AppointmentPage() {
                     <label className="label">Catatan (opsional)</label>
                     <textarea className="input textarea" rows={3} placeholder="Informasi tambahan..."
                       value={form.notes} onChange={e => setForm({...form, notes: e.target.value})}/>
+                  </div>
+
+                  <div className="field" style={{ marginTop: '8px', marginBottom: '8px' }}>
+                    <ReCAPTCHA
+                      sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
+                      onChange={(token) => setCaptchaToken(token)}
+                      onExpired={() => setCaptchaToken(null)}
+                    />
                   </div>
 
                   <div className="form-actions">

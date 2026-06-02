@@ -141,6 +141,12 @@ export default function AppointmentInboxPage() {
                 </div>
 
                 <div className="info-group">
+                  <span className="label">Lokasi Pertemuan</span>
+                  <span className="value">{app.location || '-'}
+                  </span>
+                </div>
+
+                <div className="info-group">
                   <span className="label">Kontak</span>
                   <span className="value">{app.email}<br/>{app.phone}</span>
                 </div>
