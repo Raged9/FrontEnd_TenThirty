@@ -100,14 +100,10 @@ export default function AdminLayout({ children }) {
           </svg>
           <span>Ten Thirty Solutions</span>
         </div>
+        
+        {/* Cleaned up nav links - only Home and Log Out */}
         <div className="admin-nav-links">
           <Link href="/">Home</Link>
-          <Link href="#">How it Work</Link>
-          <Link href="#">Rental Details</Link>
-          <Link href="#">Why Choose Us</Link>
-          <Link href="#">Testimonial</Link>
-          <span className="nav-divider"/>
-          <Link href="#">Register</Link>
           <button className="btn-logout" onClick={handleLogout}>Log Out</button>
         </div>
       </nav>
@@ -154,17 +150,18 @@ export default function AdminLayout({ children }) {
           display: flex; align-items: center; gap: 20px;
         }
         .admin-nav-links a {
-          font-size: 13px; color: var(--color-text-muted);
+          font-size: 14px; font-weight: 500; color: var(--color-text-muted);
           transition: color var(--transition);
         }
         .admin-nav-links a:hover { color: var(--color-text); }
-        .nav-divider { width: 1px; height: 20px; background: var(--color-bg-card); }
         .btn-logout {
-          background: var(--color-primary-dark); color: white;
+          background: #c0392b; color: white; /* Changed slightly to stand out as an exit action */
           padding: 7px 18px; border-radius: var(--radius-sm);
           font-size: 13px; font-weight: 500;
           border: none; cursor: pointer; font-family: var(--font-body);
+          transition: background 0.2s;
         }
+        .btn-logout:hover { background: #a5281b; }
 
         /* Body */
         .admin-body { display: flex; flex: 1; }
@@ -183,18 +180,17 @@ export default function AdminLayout({ children }) {
           padding: 0 8px;
         }
         
-        /* Updated Sidebar Button Styles */
         .sidebar-nav { 
           display: flex; 
           flex-direction: column; 
-          gap: 8px; /* Increased gap to make them feel like distinct buttons */
+          gap: 8px; 
         }
         
         .sidebar-item {
           display: flex; 
           align-items: center; 
-          gap: 12px; /* This keeps the icon and text side-by-side */
-          padding: 12px 16px; /* Added more padding to make it a button shape */
+          gap: 12px; 
+          padding: 12px 16px; 
           border-radius: var(--radius-sm, 8px);
           font-size: 14px; 
           color: rgba(255,255,255,0.7);
@@ -206,14 +202,14 @@ export default function AdminLayout({ children }) {
         .sidebar-item:hover {
           background: rgba(255,255,255,0.1); 
           color: white;
-          border-color: rgba(255,255,255,0.2); /* Slight border on hover */
+          border-color: rgba(255,255,255,0.2);
         }
         
         .sidebar-item.active {
-          background: #ffffff; /* Solid background when selected */
-          color: var(--color-primary, #000); /* Color of text/icon flips to contrast the white background */
+          background: #ffffff; 
+          color: var(--color-primary, #000); 
           font-weight: 600;
-          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* Drop shadow for button depth */
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); 
         }
         
         .sidebar-icon { display: flex; align-items: center; }

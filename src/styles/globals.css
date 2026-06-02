@@ -482,3 +482,31 @@ body, .admin-wrap {
   box-shadow: 0 8px 32px rgba(26, 71, 42, 0.05);
   border-bottom: 1px solid rgba(26, 71, 42, 0.1);
 }
+
+.btn-logout {
+  background-color: #1a472a;
+  color: white;
+  padding: 10px 24px;
+  border-radius: 50px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-logout:hover {
+  background-color: #e74c3c; /* Turns red on hover to indicate destructive action */
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+}
+
+.nav-link {
+  color: #1a472a;
+  font-weight: 500;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.nav-link:hover {
+  opacity: 0.7;
+}

@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 export default function AdminLoginPage() {
   const router = useRouter()
@@ -32,7 +33,7 @@ export default function AdminLoginPage() {
 
   return (
     <div className="page">
-      {/* Navbar */}
+      {/* Clean Navbar */}
       <nav className="login-nav">
         <div className="nav-logo">
           <svg width="36" height="36" viewBox="0 0 28 28" fill="none">
@@ -44,14 +45,7 @@ export default function AdminLoginPage() {
           <span>Ten Thirty Solutions</span>
         </div>
         <div className="nav-links">
-          <a href="/">Home</a>
-          <a href="#">How it Work</a>
-          <a href="#">Rental Details</a>
-          <a href="#">Choose</a>
-          <a href="#">Testimonial</a>
-          <span className="nav-divider"/>
-          <a href="#" className="nav-register">Register</a>
-          <button className="nav-login-btn">Log In</button>
+          <Link href="/">Home</Link>
         </div>
       </nav>
 
@@ -130,14 +124,8 @@ export default function AdminLoginPage() {
         }
         .nav-logo { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 15px; color: #1a2a1a; }
         .nav-links { display: flex; align-items: center; gap: 24px; }
-        .nav-links a { font-size: 13px; color: #6b7a6b; text-decoration: none; }
+        .nav-links a { font-size: 13px; color: #6b7a6b; text-decoration: none; font-weight: 600; }
         .nav-links a:hover { color: #1a2a1a; }
-        .nav-divider { width: 1px; height: 20px; background: #e8e6e0; }
-        .nav-login-btn {
-          background: #2d3d2d; color: white; padding: 8px 20px;
-          border-radius: 6px; font-size: 13px; font-weight: 500;
-          border: none; cursor: pointer; font-family: inherit;
-        }
 
         .center { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 24px; }
 
