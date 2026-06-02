@@ -3,17 +3,26 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 
 export default function Navbar() {
-  const [scrolled, setScrolled] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [showApptButton, setShowApptButton] = useState(false)
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 30)
-    window.addEventListener('scroll', onScroll)
-    return () => window.removeEventListener('scroll', onScroll)
+    const handleScroll = () => {
+      // 1. Triggers the frosted glass background after scrolling down just 50px
+      setIsScrolled(window.scrollY > 50)
+      
+      // 2. Triggers the Appointment button after scrolling past the Hero (600px)
+      setShowApptButton(window.scrollY > 600)
+    }
+
+    handleScroll() // Check on load
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
   return (
-    <nav className={`navbar${scrolled ? ' scrolled' : ''}`}>
+    <nav className={`navbar${isScrolled ? ' scrolled' : ''}`}>
       <div className="navbar-inner">
         {/* Logo */}
         <Link href="/" className="navbar-logo">
@@ -35,9 +44,11 @@ export default function Navbar() {
         </ul>
 
         {/* CTA */}
-        <Link href="/appointment" className="btn-appointment">
-          Appointment
-        </Link>
+        {showApptButton && (
+            <Link href="/appointment" className="btn-appointment">
+              Appointment
+            </Link>
+        )}
 
         {/* Mobile hamburger */}
         <button className="hamburger" onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu">
