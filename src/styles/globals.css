@@ -107,7 +107,6 @@ body, .admin-wrap {
   backdrop-filter: blur(24px) saturate(180%) !important;
   -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
   
-  /* Apple-style floating panel instead of a hard edge */
   margin: 24px 0 24px 24px !important;
   border-radius: 32px !important;
   border: 1px solid var(--glass-border) !important;
@@ -170,10 +169,7 @@ body, .admin-wrap {
   letter-spacing: -0.5px !important;
 }
 
-/* =========================================================
-   SALES DASHBOARD SPECIFIC STYLES
-   ========================================================= */
-
+/* 5. Sales Dashboard Specific Styles */
 .sales-container {
   display: flex;
   flex-direction: column;
