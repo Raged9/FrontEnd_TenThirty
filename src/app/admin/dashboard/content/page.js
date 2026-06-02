@@ -6,6 +6,7 @@ const SECTIONS = [
   { key: 'about', label: 'More Than Just a Business' },
   { key: 'location', label: 'Our Location' },
   { key: 'tentang_kami', label: 'Tentang Kami' },
+  { key: 'testimonials', label: 'Testimonials' },
 ]
 
 export default function ContentPage() {
@@ -89,6 +90,27 @@ export default function ContentPage() {
     const team = [...(content.tentang_kami?.team || [])]
     team.splice(index, 1)
     setContent(prev => ({ ...prev, tentang_kami: { ...prev.tentang_kami, team } }))
+  }
+
+  const updateTestimonial = (index, key, value) => {
+    const list = [...(content.testimonials?.list || [])]
+    list[index] = { ...list[index], [key]: value }
+    setContent(prev => ({
+      ...prev,
+      testimonials: { ...prev.testimonials, list }
+    }))
+  }
+
+  const addTestimonial = () => {
+    const list = [...(content.testimonials?.list || [])]
+    list.push({ id: Date.now(), name: '', role: '', message: '', image: null, rating: 5 })
+    setContent(prev => ({ ...prev, testimonials: { ...prev.testimonials, list } }))
+  }
+
+  const removeTestimonial = (index) => {
+    const list = [...(content.testimonials?.list || [])]
+    list.splice(index, 1)
+    setContent(prev => ({ ...prev, testimonials: { ...prev.testimonials, list } }))
   }
 
   const cur = content[activeSection] || {}
@@ -193,6 +215,30 @@ export default function ContentPage() {
                     </div>
                   ))}
                   <button className="btn-add-member" onClick={addTeamMember}>+ Tambah Anggota Tim</button>
+                </div>
+              )}
+
+              {/* TESTIMONIALS */}
+              {activeSection === 'testimonials' && (
+                <div className="fields">
+                  <h2 className="editor-title">Client Testimonials</h2>
+                  <Field label="Judul Section" value={cur.title || ''} onChange={v => updateField('title', v)} maxLength={50} />
+                  <Field label="Subjudul" value={cur.subtitle || ''} onChange={v => updateField('subtitle', v)} maxLength={100} />
+                  
+                  {(content.testimonials?.list || []).map((testi, i) => (
+                    <div key={testi.id || i} className="team-editor-card">
+                      <div className="team-editor-header">
+                        <span className="team-editor-num">Testimonial {i + 1}</span>
+                        <button className="btn-remove" onClick={() => removeTestimonial(i)}>Hapus</button>
+                      </div>
+                      <Field label="Nama Klien" value={testi.name || ''} onChange={v => updateTestimonial(i, 'name', v)} maxLength={40} />
+                      <Field label="Perusahaan / Posisi" value={testi.role || ''} onChange={v => updateTestimonial(i, 'role', v)} maxLength={50} />
+                      <Field label="Pesan Testimonial" value={testi.message || ''} onChange={v => updateTestimonial(i, 'message', v)} multiline rows={3} maxLength={250} />
+                      <Field label="Rating (1-5)" value={testi.rating || ''} onChange={v => updateTestimonial(i, 'rating', v)} maxLength={1} />
+                      <ImageField label="Foto Profil" value={testi.image} onChange={v => updateTestimonial(i, 'image', v)} token={token}/>
+                    </div>
+                  ))}
+                  <button className="btn-add-member" onClick={addTestimonial}>+ Tambah Testimonial</button>
                 </div>
               )}
 

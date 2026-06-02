@@ -26,13 +26,11 @@ export default async function HomePage() {
   return (
     <main>
       <Navbar />
-      {/* Pass the fetched database content to the sections */}
-      {/* If the database is empty, your sections will automatically use their DEFAULT values */}
       <HeroSection content={cmsData.hero} />
       <ServicesSection />
       <AboutSection content={cmsData.about} />
       <LocationSection content={cmsData.location} />
-      <TestimonialsSection />
+      <TestimonialsSection content={cmsData.testimonials}/>
       <Footer />
     </main>
   )
