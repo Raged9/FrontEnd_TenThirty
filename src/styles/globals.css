@@ -44,8 +44,45 @@ a { text-decoration: none; color: inherit; }
 
 button { cursor: pointer; border: none; background: none; font-family: var(--font-body); }
 
+/* Container to align them side-by-side */
+.hero-actions {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  margin-top: 32px;
+}
 
+/* The Primary Appointment Button */
+.btn-primary {
+  background-color: white;
+  color: #2b4c3b; /* Dark green text to match your background */
+  padding: 14px 32px;
+  border-radius: 50px; /* Pill shape */
+  font-weight: 600;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+}
 
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  background-color: #f8f9fa;
+}
+
+/* The Secondary About Us Link */
+.btn-ghost {
+  color: white;
+  font-weight: 500;
+  font-size: 16px;
+  transition: opacity 0.2s ease;
+}
+
+.btn-ghost:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+  text-underline-offset: 6px;
+}
 
 /* 1. Base Variables & Typography */
 :root {
