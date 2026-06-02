@@ -30,7 +30,7 @@ export default function Navbar() {
         {/* Desktop Nav */}
         <ul className="navbar-links">
           <li><Link href="/#services">Our Services</Link></li>
-          <li><Link href="/tentang-kami">Our Mission</Link></li>
+          <li><Link href="/#about">Our Mission</Link></li>
           <li><Link href="/#testimonials">Testimonials</Link></li>
         </ul>
 
@@ -49,7 +49,7 @@ export default function Navbar() {
       {menuOpen && (
         <div className="mobile-menu">
           <Link href="/#services" onClick={() => setMenuOpen(false)}>Our Services</Link>
-          <Link href="/tentang-kami" onClick={() => setMenuOpen(false)}>Our Mission</Link>
+          <Link href="/#about" onClick={() => setMenuOpen(false)}>Our Mission</Link>
           <Link href="/#testimonials" onClick={() => setMenuOpen(false)}>Testimonials</Link>
           <Link href="/appointment" className="btn-appointment" onClick={() => setMenuOpen(false)}>Appointment</Link>
         </div>
