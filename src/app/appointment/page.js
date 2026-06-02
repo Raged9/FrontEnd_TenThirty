@@ -30,11 +30,16 @@ export default function AppointmentPage() {
   const [selectedSchedule, setSelectedSchedule] = useState(null)
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
-  const [form, setForm] = useState({ name: '', email: '', phone: '', service: '', notes: '' })
+  
+  // NEW: Added location to the initial form state
+  const [form, setForm] = useState({ name: '', email: '', phone: '', service: '', location: '', notes: '' })
   const [error, setError] = useState('')
 
-  useEffect(() => { fetchSchedules() }, [currentMonth, currentYear])
+  // NEW: Word limit configuration
+  const MAX_WORDS = 20;
+  const currentWords = form.location.trim().split(/\s+/).filter(Boolean).length;
 
+  useEffect(() => { fetchSchedules() }, [currentMonth, currentYear])
 
   const fetchSchedules = async () => {
     setLoading(true)
@@ -53,15 +58,28 @@ export default function AppointmentPage() {
             sd.getUTCDate() === dateNum
     })
   }
+  
   const handleDateClick = (dateNum) => {
     const sched = getScheduleForDate(dateNum)
     if (sched) setSelectedSchedule(sched)
   }
 
+  // NEW: Custom handler to restrict location input by word count
+  const handleLocationChange = (e) => {
+    const val = e.target.value;
+    const words = val.trim().split(/\s+/).filter(Boolean);
+    
+    // Only allow typing if under the limit, or if they are deleting text
+    if (words.length <= MAX_WORDS || val === '') {
+      setForm({ ...form, location: val });
+    }
+  }
+
   const handleSubmit = async () => {
     setError('')
-    if (!form.name || !form.email || !form.phone || !form.service) {
-      setError('Semua field wajib diisi'); return
+    // NEW: Ensure location is required before submitting
+    if (!form.name || !form.email || !form.phone || !form.service || !form.location) {
+      setError('Semua field dengan tanda * wajib diisi'); return
     }
     if (!selectedSchedule) {
       setError('Pilih jadwal terlebih dahulu'); return
@@ -247,6 +265,19 @@ export default function AppointmentPage() {
                       ))}
                     </select>
                   </div>
+                  
+                  {/* NEW: Lokasi Field with Word Counter */}     
+                  <div className="field">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <label className="label">Lokasi Pertemuan *</label>
+                      <span className="label" style={{ fontSize: '11px', color: currentWords >= MAX_WORDS ? '#c0392b' : 'var(--color-text-muted)' }}>
+                        {currentWords} / {MAX_WORDS} kata
+                      </span>
+                    </div>
+                    <input className="input" placeholder="Contoh: Kantor PT Maju Jaya (Jl. Sudirman) / Zoom Meeting"
+                      value={form.location} onChange={handleLocationChange}/>
+                  </div>
+
                   <div className="field">
                     <label className="label">Catatan (opsional)</label>
                     <textarea className="input textarea" rows={3} placeholder="Informasi tambahan..."
@@ -276,6 +307,13 @@ export default function AppointmentPage() {
                     <div className="summary-item">
                       <span className="summary-label">Layanan</span>
                       <span className="summary-value">{SERVICES.find(s => s.value === form.service)?.label}</span>
+                    </div>
+                  )}
+                  {/* NEW: Show Location in Summary */}
+                  {form.location && (
+                    <div className="summary-item">
+                      <span className="summary-label">Lokasi</span>
+                      <span className="summary-value">{form.location}</span>
                     </div>
                   )}
                 </div>
@@ -309,6 +347,11 @@ export default function AppointmentPage() {
                   <div className="summary-item">
                     <span className="summary-label">Layanan</span>
                     <span className="summary-value">{SERVICES.find(s => s.value === form.service)?.label}</span>
+                  </div>
+                  {/* NEW: Show Location in Success Detail */}
+                  <div className="summary-item">
+                    <span className="summary-label">Lokasi</span>
+                    <span className="summary-value">{form.location}</span>
                   </div>
                 </div>
                 <a href="/" className="btn-home">Kembali ke Beranda</a>
@@ -481,7 +524,7 @@ export default function AppointmentPage() {
         .summary-title { font-size: 15px; font-weight: 600; color: var(--color-text); margin-bottom: 4px; }
         .summary-item { display: flex; flex-direction: column; gap: 2px; }
         .summary-label { font-size: 11px; color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
-        .summary-value { font-size: 14px; font-weight: 600; color: var(--color-text); }
+        .summary-value { font-size: 14px; font-weight: 600; color: var(--color-text); word-wrap: break-word; }
 
         /* Step 3 */
         .success-wrap { display: flex; justify-content: center; }
