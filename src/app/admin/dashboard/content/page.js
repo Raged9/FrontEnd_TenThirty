@@ -197,7 +197,7 @@ export default function ContentPage() {
                         <button className="btn-remove" onClick={() => removeTeamMember(i)}>Hapus</button>
                       </div>
                       <Field label="Nama" value={member.name || ''} onChange={v => updateTeamMember(i, 'name', v)} maxLength={40} />
-                      <Field label="Cerita / Bio" value={member.story || ''} onChange={v => updateTeamMember(i, 'story', v)} multiline rows={4} maxLength={300} />
+                      <Field label="Cerita / Bio" value={member.story || ''} onChange={v => updateTeamMember(i, 'story', v)} multiline rows={4} maxLength={1000} />
                       <div className="position-field">
                         <p className="field-label">Posisi Gambar</p>
                         <div className="radio-group">

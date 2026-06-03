@@ -23,7 +23,7 @@ export default function AdminLoginPage() {
       const data = await res.json()
       if (!res.ok) { setError(data.message || 'Login gagal'); return }
       localStorage.setItem('admin_token', data.token)
-      router.push('/admin/dashboard')
+      router.push('/admin/dashboard/sales')
     } catch {
       setError('Server tidak bisa dihubungi')
     } finally {
@@ -98,9 +98,18 @@ export default function AdminLoginPage() {
           <button className="btn-masuk" onClick={handleSubmit} disabled={loading}>
             {loading ? 'Memproses...' : 'Masuk'}
           </button>
-
-          <p className="forgot">Lupa Kata Sandi?</p>
-          <p className="register">Belum punya akun? <a href="#">Daftar sekarang</a></p>
+          
+          <p className="forgot">
+            Lupa Kata Sandi?{' '}
+            <a 
+              href="mailto:tenthirtynotification@gmail.com?subject=Permintaan Reset Password Admin"
+              title="Hubungi tenthirtynotification@gmail.com"
+              style={{ textDecoration: 'underline', cursor: 'pointer', color: 'inherit' }}
+            >
+              Hubungi Admin
+            </a>
+          </p>
+          {/*<p className="register">Belum punya akun? <a href="#">Daftar sekarang</a></p> ... */}
         </div>
       </div>
 
