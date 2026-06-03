@@ -104,7 +104,7 @@ body, .admin-wrap {
 }
 
 .admin-wrap {
-  background: var(--apple-bg) !important;
+  background: var(--color-bg) !important;
   min-height: 100vh;
 }
 
@@ -192,7 +192,7 @@ body, .admin-wrap {
 
 /* Active Button State */
 .sidebar-item.active {
-  background: var(--apple-green-dark) !important;
+  background: var(--color-primary) !important;
   color: white !important;
   opacity: 1;
   box-shadow: 0 8px 16px rgba(26, 71, 42, 0.25) !important; /* Inner glow/depth */
