@@ -25,15 +25,17 @@ export default function Navbar() {
     <nav className={`navbar${isScrolled ? ' scrolled' : ''}`}>
       <div className="navbar-inner">
         {/* Logo */}
-        <Link href="/" className="navbar-logo">
-          <div className="logo-icon">
-            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-              <circle cx="14" cy="14" r="13" stroke="currentColor" strokeWidth="1.5"/>
-              <path d="M14 6 C14 6, 9 10, 9 15 C9 18.3 11.2 20.5 14 21 C16.8 20.5 19 18.3 19 15 C19 10 14 6 14 6Z" fill="currentColor" fillOpacity="0.7"/>
-              <line x1="14" y1="21" x2="14" y2="25" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-            </svg>
+        <Link href="/" style={{ textDecoration: 'none' }}>
+          <div className="navbar-logo">
+            <div className="logo-icon">
+              <img 
+                src="/tenthirty.svg"  
+                width="30" 
+                height="30" 
+              />
+            </div>
+            <span className="logo-text">Ten Thirty Solutions</span>
           </div>
-          <span className="logo-text">Ten Thirty Solutions</span>
         </Link>
 
         {/* Desktop Nav */}
@@ -88,9 +90,16 @@ export default function Navbar() {
           font-weight: 500; font-size: 15px; white-space: nowrap;
         }
         .logo-icon { color: var(--color-primary); flex-shrink: 0; }
+
+        .logo-text {
+            /* Jika di-scroll warnanya gelap, jika belum warnanya terang (putih/krem) */
+            color: ${isScrolled ? 'var(--color-primary-dark, #333)' : '#FFFFFF'}; 
+        }
+
         .navbar-links {
           display: flex; list-style: none; gap: 32px;
           margin-left: auto;
+          color: ${isScrolled ? 'var(--color-primary-dark, #333)' : '#FFFFFF'};
         }
         .navbar-links a {
           font-size: 14px; color: var(--color-text-muted);

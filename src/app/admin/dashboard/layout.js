@@ -35,17 +35,6 @@ const MENU = [
     ),
   },
   {
-    label: 'Upload',
-    href: '/admin/dashboard/upload',
-    icon: (
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
-        <polyline points="16 16 12 12 8 16"/>
-        <line x1="12" y1="12" x2="12" y2="21"/>
-        <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/>
-      </svg>
-    ),
-  },
-  {
     label: 'Email',
     href: '/admin/dashboard/email',
     icon: (
@@ -92,12 +81,7 @@ export default function AdminLayout({ children }) {
       {/* Top Navbar */}
       <nav className="admin-nav">
         <div className="admin-nav-logo">
-          <svg width="32" height="32" viewBox="0 0 28 28" fill="none">
-            <circle cx="14" cy="14" r="13" stroke="var(--color-primary-dark)" strokeWidth="1.5"/>
-            <path d="M14 6C14 6 9 10 9 15C9 18.3 11.2 20.5 14 21C16.8 20.5 19 18.3 19 15C19 10 14 6 14 6Z"
-                  fill="var(--color-primary-dark)" fillOpacity="0.7"/>
-            <line x1="14" y1="21" x2="14" y2="25" stroke="var(--color-primary-dark)" strokeWidth="1.5" strokeLinecap="round"/>
-          </svg>
+          <img src="/tenthirty.svg" width="32"/>
           <span>Ten Thirty Solutions</span>
         </div>
         
@@ -155,7 +139,7 @@ export default function AdminLayout({ children }) {
         }
         .admin-nav-links a:hover { color: var(--color-text); }
         .btn-logout {
-          background: #c0392b; color: white; /* Changed slightly to stand out as an exit action */
+          background: #c0392b; color: white;
           padding: 7px 18px; border-radius: var(--radius-sm);
           font-size: 13px; font-weight: 500;
           border: none; cursor: pointer; font-family: var(--font-body);
