@@ -3,41 +3,54 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 
 export default function Navbar() {
-  const [scrolled, setScrolled] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [showApptButton, setShowApptButton] = useState(false)
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 30)
-    window.addEventListener('scroll', onScroll)
-    return () => window.removeEventListener('scroll', onScroll)
+    const handleScroll = () => {
+      // 1. Triggers the frosted glass background after scrolling down just 50px
+      setIsScrolled(window.scrollY > 50)
+      
+      // 2. Triggers the Appointment button after scrolling past the Hero (600px)
+      setShowApptButton(window.scrollY > 600)
+    }
+
+    handleScroll() // Check on load
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
   return (
-    <nav className={`navbar${scrolled ? ' scrolled' : ''}`}>
+    <nav className={`navbar${isScrolled ? ' scrolled' : ''}`}>
       <div className="navbar-inner">
         {/* Logo */}
-        <Link href="/" className="navbar-logo">
-          <div className="logo-icon">
-            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-              <circle cx="14" cy="14" r="13" stroke="currentColor" strokeWidth="1.5"/>
-              <path d="M14 6 C14 6, 9 10, 9 15 C9 18.3 11.2 20.5 14 21 C16.8 20.5 19 18.3 19 15 C19 10 14 6 14 6Z" fill="currentColor" fillOpacity="0.7"/>
-              <line x1="14" y1="21" x2="14" y2="25" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-            </svg>
+        <Link href="/" style={{ textDecoration: 'none' }}>
+          <div className="navbar-logo">
+            <div className="logo-icon">
+              <img 
+                src="/tenthirty.svg"  
+                width="30" 
+                height="30" 
+              />
+            </div>
+            <span className="logo-text">Ten Thirty Solutions</span>
           </div>
-          <span className="logo-text">Ten Thirty Solutions</span>
         </Link>
 
         {/* Desktop Nav */}
         <ul className="navbar-links">
           <li><Link href="/#services">Our Services</Link></li>
-          <li><Link href="/tentang-kami">Our Mission</Link></li>
+          <li><Link href="/#about">Our Mission</Link></li>
           <li><Link href="/#testimonials">Testimonials</Link></li>
         </ul>
 
         {/* CTA */}
-        <Link href="/appointment" className="btn-appointment">
-          Appointment
-        </Link>
+        {showApptButton && (
+            <Link href="/appointment" className="btn-appointment">
+              Appointment
+            </Link>
+        )}
 
         {/* Mobile hamburger */}
         <button className="hamburger" onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu">
@@ -49,7 +62,7 @@ export default function Navbar() {
       {menuOpen && (
         <div className="mobile-menu">
           <Link href="/#services" onClick={() => setMenuOpen(false)}>Our Services</Link>
-          <Link href="/tentang-kami" onClick={() => setMenuOpen(false)}>Our Mission</Link>
+          <Link href="/#about" onClick={() => setMenuOpen(false)}>Our Mission</Link>
           <Link href="/#testimonials" onClick={() => setMenuOpen(false)}>Testimonials</Link>
           <Link href="/appointment" className="btn-appointment" onClick={() => setMenuOpen(false)}>Appointment</Link>
         </div>
@@ -77,9 +90,16 @@ export default function Navbar() {
           font-weight: 500; font-size: 15px; white-space: nowrap;
         }
         .logo-icon { color: var(--color-primary); flex-shrink: 0; }
+
+        .logo-text {
+            /* Jika di-scroll warnanya gelap, jika belum warnanya terang (putih/krem) */
+            color: ${isScrolled ? 'var(--color-primary-dark, #333)' : '#FFFFFF'}; 
+        }
+
         .navbar-links {
           display: flex; list-style: none; gap: 32px;
           margin-left: auto;
+          color: ${isScrolled ? 'var(--color-primary-dark, #333)' : '#FFFFFF'};
         }
         .navbar-links a {
           font-size: 14px; color: var(--color-text-muted);

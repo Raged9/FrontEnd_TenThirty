@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 export default function AdminLoginPage() {
   const router = useRouter()
@@ -22,7 +23,7 @@ export default function AdminLoginPage() {
       const data = await res.json()
       if (!res.ok) { setError(data.message || 'Login gagal'); return }
       localStorage.setItem('admin_token', data.token)
-      router.push('/admin/dashboard')
+      router.push('/admin/dashboard/sales')
     } catch {
       setError('Server tidak bisa dihubungi')
     } finally {
@@ -32,26 +33,14 @@ export default function AdminLoginPage() {
 
   return (
     <div className="page">
-      {/* Navbar */}
+      {/* Clean Navbar */}
       <nav className="login-nav">
         <div className="nav-logo">
-          <svg width="36" height="36" viewBox="0 0 28 28" fill="none">
-            <circle cx="14" cy="14" r="13" stroke="#2d3d2d" strokeWidth="1.5"/>
-            <path d="M14 6C14 6 9 10 9 15C9 18.3 11.2 20.5 14 21C16.8 20.5 19 18.3 19 15C19 10 14 6 14 6Z"
-                  fill="#2d3d2d" fillOpacity="0.7"/>
-            <line x1="14" y1="21" x2="14" y2="25" stroke="#2d3d2d" strokeWidth="1.5" strokeLinecap="round"/>
-          </svg>
+          <img src="/tenthirty.svg" width="35" style={{ marginRight: '8px' }} />
           <span>Ten Thirty Solutions</span>
         </div>
         <div className="nav-links">
-          <a href="/">Home</a>
-          <a href="#">How it Work</a>
-          <a href="#">Rental Details</a>
-          <a href="#">Choose</a>
-          <a href="#">Testimonial</a>
-          <span className="nav-divider"/>
-          <a href="#" className="nav-register">Register</a>
-          <button className="nav-login-btn">Log In</button>
+          <Link href="/">Home</Link>
         </div>
       </nav>
 
@@ -59,12 +48,7 @@ export default function AdminLoginPage() {
       <div className="center">
         <div className="card">
           <div className="logo">
-            <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
-              <circle cx="26" cy="26" r="24" stroke="rgba(255,255,255,0.7)" strokeWidth="1.5"/>
-              <path d="M26 10C26 10 18 17 18 24C18 29.5 21.5 33 26 34C30.5 33 34 29.5 34 24C34 17 26 10 26 10Z"
-                    fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="1.5" strokeLinejoin="round"/>
-              <line x1="26" y1="34" x2="26" y2="42" stroke="rgba(255,255,255,0.7)" strokeWidth="1.5" strokeLinecap="round"/>
-            </svg>
+            <img src="/tenthirty.svg" width="52" style={{ marginRight: '12px' }} />
           </div>
 
           <h1 className="title">Masuk ke Akun Anda</h1>
@@ -114,9 +98,18 @@ export default function AdminLoginPage() {
           <button className="btn-masuk" onClick={handleSubmit} disabled={loading}>
             {loading ? 'Memproses...' : 'Masuk'}
           </button>
-
-          <p className="forgot">Lupa Kata Sandi?</p>
-          <p className="register">Belum punya akun? <a href="#">Daftar sekarang</a></p>
+          
+          <p className="forgot">
+            Lupa Kata Sandi?{' '}
+            <a 
+              href="mailto:tenthirtynotification@gmail.com?subject=Permintaan Reset Password Admin"
+              title="Hubungi tenthirtynotification@gmail.com"
+              style={{ textDecoration: 'underline', cursor: 'pointer', color: 'inherit' }}
+            >
+              Hubungi Admin
+            </a>
+          </p>
+          {/*<p className="register">Belum punya akun? <a href="#">Daftar sekarang</a></p> ... */}
         </div>
       </div>
 
@@ -128,16 +121,10 @@ export default function AdminLoginPage() {
           height: 64px; padding: 0 32px;
           display: flex; align-items: center; justify-content: space-between;
         }
-        .nav-logo { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 15px; color: #1a2a1a; }
+        .nav-logo { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 15px; color: #1a2a1a; }
         .nav-links { display: flex; align-items: center; gap: 24px; }
-        .nav-links a { font-size: 13px; color: #6b7a6b; text-decoration: none; }
+        .nav-links a { font-size: 13px; color: #6b7a6b; text-decoration: none; font-weight: 600; }
         .nav-links a:hover { color: #1a2a1a; }
-        .nav-divider { width: 1px; height: 20px; background: #e8e6e0; }
-        .nav-login-btn {
-          background: #2d3d2d; color: white; padding: 8px 20px;
-          border-radius: 6px; font-size: 13px; font-weight: 500;
-          border: none; cursor: pointer; font-family: inherit;
-        }
 
         .center { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 24px; }
 

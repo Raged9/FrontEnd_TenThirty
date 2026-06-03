@@ -32,7 +32,7 @@ export default function HeroSection({ content = DEFAULT_HERO }) {
           <p className="hero-sub">{content.subtext}</p>
           <div className="hero-actions">
             <Link href="/appointment" className="btn-primary">Appointment</Link>
-            <button className="btn-ghost">About us</button>
+            <Link href="/tentang-kami" className="btn-ghost">About us</Link>
           </div>
         </div>
 
