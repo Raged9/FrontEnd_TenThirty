@@ -27,7 +27,7 @@ const DEFAULT_LOCATION = {
 
 export function AboutSection({ content = DEFAULT_ABOUT }) {
   return (
-    <section className="section-about">
+    <section id="about" className="section-about">
       <div className="container">
         <div className="about-grid">
           {/* Image */}

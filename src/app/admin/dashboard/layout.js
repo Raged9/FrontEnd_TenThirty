@@ -6,7 +6,7 @@ import Link from 'next/link'
 const MENU = [
   {
     label: 'Sales',
-    href: '/admin/dashboard',
+    href: '/admin/dashboard/sales',
     icon: (
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
         <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
@@ -100,14 +100,10 @@ export default function AdminLayout({ children }) {
           </svg>
           <span>Ten Thirty Solutions</span>
         </div>
+        
+        {/* Cleaned up nav links - only Home and Log Out */}
         <div className="admin-nav-links">
           <Link href="/">Home</Link>
-          <Link href="#">How it Work</Link>
-          <Link href="#">Rental Details</Link>
-          <Link href="#">Why Choose Us</Link>
-          <Link href="#">Testimonial</Link>
-          <span className="nav-divider"/>
-          <Link href="#">Register</Link>
           <button className="btn-logout" onClick={handleLogout}>Log Out</button>
         </div>
       </nav>
@@ -154,17 +150,18 @@ export default function AdminLayout({ children }) {
           display: flex; align-items: center; gap: 20px;
         }
         .admin-nav-links a {
-          font-size: 13px; color: var(--color-text-muted);
+          font-size: 14px; font-weight: 500; color: var(--color-text-muted);
           transition: color var(--transition);
         }
         .admin-nav-links a:hover { color: var(--color-text); }
-        .nav-divider { width: 1px; height: 20px; background: var(--color-bg-card); }
         .btn-logout {
-          background: var(--color-primary-dark); color: white;
+          background: #c0392b; color: white; /* Changed slightly to stand out as an exit action */
           padding: 7px 18px; border-radius: var(--radius-sm);
           font-size: 13px; font-weight: 500;
           border: none; cursor: pointer; font-family: var(--font-body);
+          transition: background 0.2s;
         }
+        .btn-logout:hover { background: #a5281b; }
 
         /* Body */
         .admin-body { display: flex; flex: 1; }
@@ -182,20 +179,39 @@ export default function AdminLayout({ children }) {
           color: rgba(255,255,255,0.5); margin-bottom: 16px;
           padding: 0 8px;
         }
-        .sidebar-nav { display: flex; flex-direction: column; gap: 4px; }
+        
+        .sidebar-nav { 
+          display: flex; 
+          flex-direction: column; 
+          gap: 8px; 
+        }
+        
         .sidebar-item {
-          display: flex; align-items: center; gap: 12px;
-          padding: 10px 12px; border-radius: var(--radius-sm);
-          font-size: 14px; color: rgba(255,255,255,0.6);
-          transition: all var(--transition);
+          display: flex; 
+          align-items: center; 
+          gap: 12px; 
+          padding: 12px 16px; 
+          border-radius: var(--radius-sm, 8px);
+          font-size: 14px; 
+          color: rgba(255,255,255,0.7);
+          transition: all 0.2s ease-in-out;
+          border: 1px solid transparent;
+          text-decoration: none;
         }
+        
         .sidebar-item:hover {
-          background: rgba(255,255,255,0.1); color: white;
+          background: rgba(255,255,255,0.1); 
+          color: white;
+          border-color: rgba(255,255,255,0.2);
         }
+        
         .sidebar-item.active {
-          background: rgba(255,255,255,0.15); color: white;
-          font-weight: 500;
+          background: #ffffff; 
+          color: var(--color-primary, #000); 
+          font-weight: 600;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); 
         }
+        
         .sidebar-icon { display: flex; align-items: center; }
 
         /* Main */

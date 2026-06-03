@@ -6,6 +6,7 @@ const SECTIONS = [
   { key: 'about', label: 'More Than Just a Business' },
   { key: 'location', label: 'Our Location' },
   { key: 'tentang_kami', label: 'Tentang Kami' },
+  { key: 'testimonials', label: 'Testimonials' },
 ]
 
 export default function ContentPage() {
@@ -91,6 +92,27 @@ export default function ContentPage() {
     setContent(prev => ({ ...prev, tentang_kami: { ...prev.tentang_kami, team } }))
   }
 
+  const updateTestimonial = (index, key, value) => {
+    const list = [...(content.testimonials?.list || [])]
+    list[index] = { ...list[index], [key]: value }
+    setContent(prev => ({
+      ...prev,
+      testimonials: { ...prev.testimonials, list }
+    }))
+  }
+
+  const addTestimonial = () => {
+    const list = [...(content.testimonials?.list || [])]
+    list.push({ id: Date.now(), name: '', role: '', message: '', image: null, rating: 5 })
+    setContent(prev => ({ ...prev, testimonials: { ...prev.testimonials, list } }))
+  }
+
+  const removeTestimonial = (index) => {
+    const list = [...(content.testimonials?.list || [])]
+    list.splice(index, 1)
+    setContent(prev => ({ ...prev, testimonials: { ...prev.testimonials, list } }))
+  }
+
   const cur = content[activeSection] || {}
 
   return (
@@ -121,15 +143,15 @@ export default function ContentPage() {
               {activeSection === 'hero' && (
                 <div className="fields">
                   <h2 className="editor-title">Hero Section</h2>
-                  <Field label="Headline" value={cur.headline || ''} onChange={v => updateField('headline', v)} multiline/>
-                  <Field label="Subtext" value={cur.subtext || ''} onChange={v => updateField('subtext', v)} multiline/>
+                  <Field label="Headline" value={cur.headline || ''} onChange={v => updateField('headline', v)} multiline maxLength={80} />
+                  <Field label="Subtext" value={cur.subtext || ''} onChange={v => updateField('subtext', v)} multiline maxLength={200} />
                   <div className="stats-grid">
-                    <Field label="Stat 1 - Angka" value={cur.stat1_number || ''} onChange={v => updateField('stat1_number', v)}/>
-                    <Field label="Stat 1 - Label" value={cur.stat1_label || ''} onChange={v => updateField('stat1_label', v)}/>
-                    <Field label="Stat 2 - Angka" value={cur.stat2_number || ''} onChange={v => updateField('stat2_number', v)}/>
-                    <Field label="Stat 2 - Label" value={cur.stat2_label || ''} onChange={v => updateField('stat2_label', v)}/>
-                    <Field label="Stat 3 - Angka" value={cur.stat3_number || ''} onChange={v => updateField('stat3_number', v)}/>
-                    <Field label="Stat 3 - Label" value={cur.stat3_label || ''} onChange={v => updateField('stat3_label', v)}/>
+                    <Field label="Stat 1 - Angka" value={cur.stat1_number || ''} onChange={v => updateField('stat1_number', v)} maxLength={10} />
+                    <Field label="Stat 1 - Label" value={cur.stat1_label || ''} onChange={v => updateField('stat1_label', v)} maxLength={25} />
+                    <Field label="Stat 2 - Angka" value={cur.stat2_number || ''} onChange={v => updateField('stat2_number', v)} maxLength={10} />
+                    <Field label="Stat 2 - Label" value={cur.stat2_label || ''} onChange={v => updateField('stat2_label', v)} maxLength={25} />
+                    <Field label="Stat 3 - Angka" value={cur.stat3_number || ''} onChange={v => updateField('stat3_number', v)} maxLength={10} />
+                    <Field label="Stat 3 - Label" value={cur.stat3_label || ''} onChange={v => updateField('stat3_label', v)} maxLength={25} />
                   </div>
                   <ImageField label="Hero Image" value={cur.hero_image} onChange={v => updateField('hero_image', v)} token={token}/>
                 </div>
@@ -139,15 +161,16 @@ export default function ContentPage() {
               {activeSection === 'about' && (
                 <div className="fields">
                   <h2 className="editor-title">More Than Just a Business</h2>
-                  <Field label="Judul" value={cur.title || ''} onChange={v => updateField('title', v)}/>
-                  <Field label="Deskripsi" value={cur.description || ''} onChange={v => updateField('description', v)} multiline/>
+                  <Field label="Judul Utama" value={cur.title || ''} onChange={v => updateField('title', v)} maxLength={50} />
+                  <Field label="Deskripsi" value={cur.description || ''} onChange={v => updateField('description', v)} multiline maxLength={350} />
                   <ImageField label="Gambar" value={cur.image} onChange={v => updateField('image', v)} token={token}/>
+                  
                   <div className="points-section">
-                    <p className="points-label">Poin-poin</p>
-                    {(cur.points || []).map((pt, i) => (
+                    <p className="points-label">Poin-poin Dukungan</p>
+                    {(cur.points || [{}, {}, {}]).map((pt, i) => (
                       <div key={i} className="point-item">
-                        <Field label={`Judul Poin ${i + 1}`} value={pt.title || ''} onChange={v => updatePoint(i, 'title', v)}/>
-                        <Field label={`Deskripsi Poin ${i + 1}`} value={pt.desc || ''} onChange={v => updatePoint(i, 'desc', v)} multiline/>
+                        <Field label={`Judul Poin ${i + 1}`} value={pt.title || ''} onChange={v => updatePoint(i, 'title', v)} maxLength={40} />
+                        <Field label={`Deskripsi Poin ${i + 1}`} value={pt.desc || ''} onChange={v => updatePoint(i, 'desc', v)} multiline rows={2} maxLength={120} />
                       </div>
                     ))}
                   </div>
@@ -158,7 +181,7 @@ export default function ContentPage() {
               {activeSection === 'location' && (
                 <div className="fields">
                   <h2 className="editor-title">Our Location</h2>
-                  <Field label="Alamat" value={cur.address || ''} onChange={v => updateField('address', v)} multiline/>
+                  <Field label="Alamat Lengkap" value={cur.address || ''} onChange={v => updateField('address', v)} multiline maxLength={200} />
                   <ImageField label="Gambar Peta" value={cur.map_image} onChange={v => updateField('map_image', v)} token={token}/>
                 </div>
               )}
@@ -173,8 +196,8 @@ export default function ContentPage() {
                         <span className="team-editor-num">Anggota {i + 1}</span>
                         <button className="btn-remove" onClick={() => removeTeamMember(i)}>Hapus</button>
                       </div>
-                      <Field label="Nama" value={member.name || ''} onChange={v => updateTeamMember(i, 'name', v)}/>
-                      <Field label="Cerita / Bio" value={member.story || ''} onChange={v => updateTeamMember(i, 'story', v)} multiline rows={6}/>
+                      <Field label="Nama" value={member.name || ''} onChange={v => updateTeamMember(i, 'name', v)} maxLength={40} />
+                      <Field label="Cerita / Bio" value={member.story || ''} onChange={v => updateTeamMember(i, 'story', v)} multiline rows={4} maxLength={300} />
                       <div className="position-field">
                         <p className="field-label">Posisi Gambar</p>
                         <div className="radio-group">
@@ -191,7 +214,31 @@ export default function ContentPage() {
                       <ImageField label="Foto" value={member.image} onChange={v => updateTeamMember(i, 'image', v)} token={token}/>
                     </div>
                   ))}
-                  <button className="btn-add-member" onClick={addTeamMember}>+ Tambah Anggota</button>
+                  <button className="btn-add-member" onClick={addTeamMember}>+ Tambah Anggota Tim</button>
+                </div>
+              )}
+
+              {/* TESTIMONIALS */}
+              {activeSection === 'testimonials' && (
+                <div className="fields">
+                  <h2 className="editor-title">Client Testimonials</h2>
+                  <Field label="Judul Section" value={cur.title || ''} onChange={v => updateField('title', v)} maxLength={50} />
+                  <Field label="Subjudul" value={cur.subtitle || ''} onChange={v => updateField('subtitle', v)} maxLength={100} />
+                  
+                  {(content.testimonials?.list || []).map((testi, i) => (
+                    <div key={testi.id || i} className="team-editor-card">
+                      <div className="team-editor-header">
+                        <span className="team-editor-num">Testimonial {i + 1}</span>
+                        <button className="btn-remove" onClick={() => removeTestimonial(i)}>Hapus</button>
+                      </div>
+                      <Field label="Nama Klien" value={testi.name || ''} onChange={v => updateTestimonial(i, 'name', v)} maxLength={40} />
+                      <Field label="Perusahaan / Posisi" value={testi.role || ''} onChange={v => updateTestimonial(i, 'role', v)} maxLength={50} />
+                      <Field label="Pesan Testimonial" value={testi.message || ''} onChange={v => updateTestimonial(i, 'message', v)} multiline rows={3} maxLength={250} />
+                      <Field label="Rating (1-5)" value={testi.rating || ''} onChange={v => updateTestimonial(i, 'rating', v)} maxLength={1} />
+                      <ImageField label="Foto Profil" value={testi.image} onChange={v => updateTestimonial(i, 'image', v)} token={token}/>
+                    </div>
+                  ))}
+                  <button className="btn-add-member" onClick={addTestimonial}>+ Tambah Testimonial</button>
                 </div>
               )}
 
@@ -305,19 +352,42 @@ export default function ContentPage() {
   )
 }
 
-// Reusable field components
-function Field({ label, value, onChange, multiline, rows = 3 }) {
+// UPGRADED: Reusable field component now enforces max length and shows a counter!
+function Field({ label, value, onChange, multiline, rows = 3, maxLength }) {
+  const currentLength = value?.length || 0;
+  
   return (
     <div className="field">
-      <label className="label">{label}</label>
+      <div className="label-header">
+        <label className="label">{label}</label>
+        {maxLength && (
+          <span className="char-count" style={{ color: currentLength >= maxLength ? '#c0392b' : 'var(--color-text-muted)' }}>
+            {currentLength} / {maxLength}
+          </span>
+        )}
+      </div>
       {multiline ? (
-        <textarea className="input" rows={rows} value={value} onChange={e => onChange(e.target.value)}/>
+        <textarea 
+          className="input" 
+          rows={rows} 
+          value={value} 
+          onChange={e => onChange(e.target.value)} 
+          maxLength={maxLength}
+        />
       ) : (
-        <input className="input" type="text" value={value} onChange={e => onChange(e.target.value)}/>
+        <input 
+          className="input" 
+          type="text" 
+          value={value} 
+          onChange={e => onChange(e.target.value)} 
+          maxLength={maxLength}
+        />
       )}
       <style jsx>{`
         .field { display: flex; flex-direction: column; gap: 6px; }
+        .label-header { display: flex; justify-content: space-between; align-items: center; }
         .label { font-size: 13px; color: var(--color-text-muted); font-weight: 500; }
+        .char-count { font-size: 11px; opacity: 0.8; font-family: monospace; }
         .input {
           padding: 10px 12px; border: 1px solid var(--color-bg-card);
           border-radius: var(--radius-sm); font-size: 14px;
