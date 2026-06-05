@@ -48,7 +48,7 @@ export function AboutSection({ content = DEFAULT_ABOUT }) {
             )}
           </div>
 
-          {/* Text */}
+          {/* Text as a Box */}
           <div className="about-text">
             <h2 className="about-title">{content.title}</h2>
             <p className="about-desc">{content.description}</p>
@@ -70,39 +70,51 @@ export function AboutSection({ content = DEFAULT_ABOUT }) {
       <style jsx>{`
         .section-about { padding: 80px 24px; background: var(--color-bg); }
         .container { max-width: 1200px; margin: 0 auto; }
+        
+        /* 1. Change to Flexbox with wrap enabled */
         .about-grid {
-          display: grid; grid-template-columns: 1fr 1fr; gap: 64px;
+          display: flex; 
+          flex-wrap: wrap; /* This is the magic property that drops the box down */
+          gap: 64px;
+          justify-content: center; /* Keeps them centered whether side-by-side or stacked */
           align-items: center;
         }
-        .about-img { width: 100%; border-radius: var(--radius-lg); object-fit: cover; }
+
+        /* Strictly Fixed 500x1000px Image */
+        .about-image-wrap { 
+          display: flex; justify-content: center; align-items: center; 
+          flex: 0 0 auto; /* Tells the image never to shrink or grow */
+        }
+        .about-img { 
+          width: 500px !important; min-width: 500px; max-width: 500px;
+          height: 1000px !important; min-height: 1000px; max-height: 1000px;
+          border-radius: var(--radius-lg); object-fit: cover; 
+        }
         .about-img-placeholder {
-          width: 100%; aspect-ratio: 4/3;
-          border-radius: var(--radius-lg); overflow: hidden;
+          width: 500px !important; min-width: 500px; max-width: 500px;
+          height: 1000px !important; min-height: 1000px; max-height: 1000px;
+          border-radius: var(--radius-lg); overflow: hidden; 
+          background: var(--color-bg-card);
         }
         .about-img-placeholder svg { width: 100%; height: 100%; }
-        .about-title {
-          font-size: clamp(24px, 2.5vw, 34px); font-weight: 700;
-          color: var(--color-text); margin-bottom: 16px; line-height: 1.2;
-        }
-        .about-desc {
-          font-size: 14px; color: var(--color-text-muted);
-          line-height: 1.7; margin-bottom: 32px;
-        }
-        .about-points { display: flex; flex-direction: column; gap: 20px; }
-        .about-point { display: flex; gap: 16px; }
-        .point-dot {
-          width: 10px; height: 10px;
-          background: var(--color-bg-card);
-          border: 2px solid var(--color-accent);
-          border-radius: 50%; flex-shrink: 0; margin-top: 4px;
-        }
-        .point-title {
-          font-size: 14px; font-weight: 500; color: var(--color-text);
-          margin-bottom: 4px;
-        }
-        .point-desc { font-size: 13px; color: var(--color-text-muted); line-height: 1.5; }
-        @media (max-width: 768px) {
-          .about-grid { grid-template-columns: 1fr; gap: 32px; }
+
+        /* 2. The Rigid Text Box */
+        .about-text {
+          background: white;
+          padding: 48px;
+          border-radius: var(--radius-lg);
+          box-shadow: 0 12px 40px rgba(0,0,0,0.06);
+          
+          /* This makes the box rigid. It tries to stay 500px wide. */
+          /* Note: using min(100%, 500px) ensures it doesn't overflow on tiny mobile phones */
+          width: 100%;
+          max-width: 600px; 
+          flex: 0 0 min(100%, 500px); 
+          
+          margin: 0 auto;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
         }
       `}</style>
     </section>

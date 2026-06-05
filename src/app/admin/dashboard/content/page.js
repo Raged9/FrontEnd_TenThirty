@@ -147,11 +147,11 @@ export default function ContentPage() {
                   <Field label="Subtext" value={cur.subtext || ''} onChange={v => updateField('subtext', v)} multiline maxLength={200} />
                   <div className="stats-grid">
                     <Field label="Stat 1 - Angka" value={cur.stat1_number || ''} onChange={v => updateField('stat1_number', v)} maxLength={10} />
-                    <Field label="Stat 1 - Label" value={cur.stat1_label || ''} onChange={v => updateField('stat1_label', v)} maxLength={25} />
+                    <Field label="Stat 1 - Label" value={cur.stat1_label || ''} onChange={v => updateField('stat1_label', v)} maxLength={50} />
                     <Field label="Stat 2 - Angka" value={cur.stat2_number || ''} onChange={v => updateField('stat2_number', v)} maxLength={10} />
-                    <Field label="Stat 2 - Label" value={cur.stat2_label || ''} onChange={v => updateField('stat2_label', v)} maxLength={25} />
+                    <Field label="Stat 2 - Label" value={cur.stat2_label || ''} onChange={v => updateField('stat2_label', v)} maxLength={50} />
                     <Field label="Stat 3 - Angka" value={cur.stat3_number || ''} onChange={v => updateField('stat3_number', v)} maxLength={10} />
-                    <Field label="Stat 3 - Label" value={cur.stat3_label || ''} onChange={v => updateField('stat3_label', v)} maxLength={25} />
+                    <Field label="Stat 3 - Label" value={cur.stat3_label || ''} onChange={v => updateField('stat3_label', v)} maxLength={50} />
                   </div>
                   <ImageField label="Hero Image" value={cur.hero_image} onChange={v => updateField('hero_image', v)} token={token}/>
                 </div>
