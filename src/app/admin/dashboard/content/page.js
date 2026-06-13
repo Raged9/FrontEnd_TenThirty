@@ -229,7 +229,7 @@ export default function ContentPage() {
                     <div key={testi.id || i} className="team-editor-card">
                       <div className="team-editor-header">
                         <span className="team-editor-num">Testimonial {i + 1}</span>
-                        <button className="btn-remove" onClick={() => removeTestimonial(i)}>Hapus</button>
+                        <button type="button" className="btn-remove" onClick={() => removeTestimonial(i)}>Hapus</button>
                       </div>
                       <Field label="Nama Klien" value={testi.name || ''} onChange={v => updateTestimonial(i, 'name', v)} maxLength={40} />
                       <Field label="Perusahaan / Posisi" value={testi.role || ''} onChange={v => updateTestimonial(i, 'role', v)} maxLength={50} />
@@ -238,7 +238,7 @@ export default function ContentPage() {
                       <ImageField label="Foto Profil" value={testi.image} onChange={v => updateTestimonial(i, 'image', v)} token={token}/>
                     </div>
                   ))}
-                  <button className="btn-add-member" onClick={addTestimonial}>+ Tambah Testimonial</button>
+                  <button type="button" className="btn-add-member" onClick={addTestimonial}>+ Tambah Testimonial</button>
                 </div>
               )}
 
@@ -352,7 +352,6 @@ export default function ContentPage() {
   )
 }
 
-// UPGRADED: Reusable field component now enforces max length and shows a counter!
 function Field({ label, value, onChange, multiline, rows = 3, maxLength }) {
   const currentLength = value?.length || 0;
   
@@ -401,37 +400,265 @@ function Field({ label, value, onChange, multiline, rows = 3, maxLength }) {
   )
 }
 
-function ImageField({ label, value, onChange, token }) {
-  const [uploading, setUploading] = useState(false)
+// -------------------------------------------------------------
+// COMPONENT: Modal Media Library (Gallery) - PURE CSS IMMUNE TO OVERLAP
+// -------------------------------------------------------------
+function MediaLibraryModal({ onClose, onSelect, token }) {
+  const [images, setImages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
+
+  useEffect(() => {
+    fetchImages();
+  }, []);
+
+  const fetchImages = async () => {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/upload`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data)) {
+           setImages(data);
+        }
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleUpload = async (e) => {
-    const file = e.target.files[0]
-    if (!file) return
-    setUploading(true)
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploading(true);
     try {
-      const formData = new FormData()
-      formData.append('image', file)
+      const formData = new FormData();
+      formData.append('image', file);
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/upload`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
-      })
+      });
       if (res.ok) {
-        const data = await res.json()
-        onChange(data.url)
+        const data = await res.json();
+        onSelect(data.url);
       }
-    } catch {}
-    setUploading(false)
-  }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleDelete = async (e, public_id) => {
+    e.stopPropagation(); // Kunci penting: Mencegah gambar ikut ter-select saat hapus diclick
+    if (!confirm('Apakah Anda yakin ingin menghapus gambar ini dari Cloudinary?')) return;
+
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/upload/${encodeURIComponent(public_id)}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (res.ok) {
+        setImages((prev) => prev.filter((img) => img.public_id !== public_id));
+        alert('Gambar berhasil dihapus!');
+      } else {
+        alert('Gagal menghapus gambar');
+      }
+    } catch (err) {
+      console.error('Error deleting:', err);
+      alert('Terjadi kesalahan saat menghapus gambar.');
+    }
+  };
+
+  return (
+    <div className="modal-overlay">
+      <div className="modal-content">
+        <div className="modal-header">
+          <h3>Media Library</h3>
+          <button onClick={onClose} className="btn-close">✕</button>
+        </div>
+
+        <div className="modal-actions">
+          <label className="upload-new-btn">
+            {uploading ? 'Mengupload...' : '+ Upload Gambar Baru'}
+            <input type="file" accept="image/*" onChange={handleUpload} style={{ display: 'none' }} disabled={uploading}/>
+          </label>
+        </div>
+
+        {loading ? (
+          <div className="loading-gallery">Memuat Galeri...</div>
+        ) : (
+          <div className="gallery-grid">
+            {images.length === 0 ? (
+              <p className="empty-state">Belum ada gambar di galeri. Silakan upload baru.</p>
+            ) : (
+              images.map((img, idx) => (
+                <div key={idx} className="gallery-item" onClick={() => onSelect(img.url)}>
+                  <img src={img.url} alt="Gallery item" />
+                  
+                  <div className="overlay">
+                    <span className="select-text">Pilih Gambar</span>
+                    <button 
+                      type="button"
+                      className="delete-btn" 
+                      onClick={(e) => handleDelete(e, img.public_id)}
+                    >
+                      Hapus
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        )}
+      </div>
+
+      <style jsx>{`
+        .modal-overlay {
+          position: fixed; inset: 0;
+          background: rgba(0, 0, 0, 0.6);
+           Blanche: overlay;
+          z-index: 99999; display: flex;
+          align-items: center; justify-content: center;
+          padding: 20px;
+          box-sizing: border-box;
+        }
+        .modal-content {
+          background: white; border-radius: 12px;
+          width: 100%; max-width: 950px;
+          height: 85vh; max-height: 800px;
+          display: flex; flex-direction: column;
+          overflow: hidden;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+          box-sizing: border-box;
+        }
+        .modal-header {
+          display: flex; justify-content: space-between; align-items: center;
+          padding: 20px 24px; border-bottom: 1px solid #e1e1e1;
+        }
+        .modal-header h3 { margin: 0; font-size: 18px; color: #333; font-weight: 600; }
+        .btn-close {
+          background: none; border: none; font-size: 20px;
+          cursor: pointer; color: #999; transition: color 0.2s;
+        }
+        .btn-close:hover { color: #333; }
+        
+        .modal-actions {
+          padding: 16px 24px; background: #fafaf9;
+          border-bottom: 1px solid #e1e1e1;
+        }
+        .upload-new-btn {
+          display: inline-block; padding: 10px 20px;
+          background: #2563eb; color: white;
+          border-radius: 6px; font-size: 14px;
+          cursor: pointer; font-weight: 500; transition: background 0.2s;
+        }
+        .upload-new-btn:hover { background: #1d4ed8; }
+        
+        .loading-gallery, .empty-state {
+          padding: 60px; text-align: center; color: #666; font-size: 14px;
+        }
+        
+        /* SOLUSI KUNCI: Pengunci Grid Murni CSS */
+        .gallery-grid {
+          padding: 24px; overflow-y: auto; flex: 1;
+          display: grid; 
+          grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+          gap: 24px; 
+          align-content: start;
+          box-sizing: border-box;
+        }
+        
+        /* Padding-Bottom Hack (Rasio 1:1) Memaksa Item Membentuk Kotak Sempurna */
+        .gallery-item {
+          position: relative; 
+          width: 100%; 
+          height: 0;
+          padding-bottom: 100%; /* Membuat box kotak murni secara paksa */
+          border-radius: 8px; 
+          overflow: hidden; 
+          border: 1px solid #e2e8f0;
+          background: #f8fafc;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+          transition: transform 0.2s, box-shadow 0.2s;
+          box-sizing: border-box;
+        }
+        .gallery-item:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+        }
+        
+        /* Memaksa gambar mengisi container absolut tanpa merusak layout grid */
+        .gallery-item img {
+          position: absolute; top: 0; left: 0;
+          width: 100%; height: 100%; 
+          object-fit: cover;
+          display: block;
+        }
+        
+        /* Overlay Terkunci Sempurna Di Atas Gambar */
+        .gallery-item .overlay {
+          position: absolute; inset: 0; 
+          background: rgba(0,0,0,0.55);
+          display: flex; flex-direction: column; gap: 12px;
+          align-items: center; justify-content: center;
+          opacity: 0; transition: opacity 0.2s ease;
+          z-index: 2;
+        }
+        .gallery-item:hover .overlay { opacity: 1; }
+        
+        .select-text {
+          color: white; font-weight: 600; font-size: 13px;
+          padding: 6px 14px; border: 2px solid white;
+          border-radius: 20px; background: rgba(0,0,0,0.2);
+          transition: background 0.2s, color 0.2s;
+        }
+        .select-text:hover { background: white; color: black; }
+        
+        .delete-btn {
+          background: #ef4444; color: white; border: none;
+          padding: 5px 12px; border-radius: 4px; font-size: 11px;
+          cursor: pointer; font-weight: 500; transition: background 0.2s;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .delete-btn:hover { background: #dc2626; }
+      `}</style>
+    </div>
+  );
+}
+
+// -------------------------------------------------------------
+// ImageField COMPONENT
+// -------------------------------------------------------------
+function ImageField({ label, value, onChange, token }) {
+  const [showModal, setShowModal] = useState(false);
 
   return (
     <div className="img-field">
       <label className="label">{label}</label>
+      
       {value && <img src={value} alt="preview" className="preview"/>}
-      <label className="upload-btn">
-        {uploading ? 'Mengupload...' : value ? 'Ganti Gambar' : 'Upload Gambar'}
-        <input type="file" accept="image/*" onChange={handleUpload} style={{ display: 'none' }}/>
-      </label>
+      
+      <button type="button" className="upload-btn" onClick={() => setShowModal(true)}>
+        {value ? 'Ganti Gambar' : 'Pilih Gambar dari Galeri'}
+      </button>
+
+      {showModal && (
+        <MediaLibraryModal 
+          token={token} 
+          onClose={() => setShowModal(false)}
+          onSelect={(url) => {
+            onChange(url);
+            setShowModal(false);
+          }}
+        />
+      )}
+
       <style jsx>{`
         .img-field { display: flex; flex-direction: column; gap: 8px; }
         .label { font-size: 13px; color: var(--color-text-muted); font-weight: 500; }
@@ -440,10 +667,10 @@ function ImageField({ label, value, onChange, token }) {
           border-radius: var(--radius-sm); border: 1px solid var(--color-bg-card);
         }
         .upload-btn {
-          display: inline-block; padding: 9px 16px;
+          display: inline-block; padding: 9px 16px; background: white;
           border: 1px solid var(--color-primary);
           border-radius: var(--radius-sm); color: var(--color-primary);
-          font-size: 13px; cursor: pointer;
+          font-size: 13px; cursor: pointer; font-family: var(--font-body);
           transition: all var(--transition); text-align: center;
         }
         .upload-btn:hover { background: var(--color-primary); color: white; }
